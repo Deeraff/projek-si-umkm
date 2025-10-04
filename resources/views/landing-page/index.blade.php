@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard UMKM')
+@section('title', 'Landing Page')
 
 @section('content')
 <div>
@@ -31,7 +31,41 @@
     </div>
 
     {{-- UMKM Section --}}
-    <h2 class="section-title mb-6">Dashboard UMKM</h2>
+    <h2 class="section-title mb-6">Data UMKM</h2>
+    
+    @php
+        // Buat array data dummy untuk UMKM
+        $umkm = [
+            (object) [
+                'id' => 1,
+                'nama_umkm' => 'Toko Kopi Sejahtera',
+                'logo' => null, // Biarkan null agar placeholder muncul
+                'profil' => (object) [
+                    'jenis_usaha' => 'Kuliner',
+                    'alamat_usaha' => 'Jl. Kenangan No. 1'
+                ]
+            ],
+            (object) [
+                'id' => 2,
+                'nama_umkm' => 'Kerajinan Kayu Ajaib',
+                'logo' => null,
+                'profil' => (object) [
+                    'jenis_usaha' => 'Kerajinan',
+                    'alamat_usaha' => 'Jl. Mahoni No. 5'
+                ]
+            ],
+            (object) [
+                'id' => 3,
+                'nama_umkm' => 'Batik Nusantara',
+                'logo' => null,
+                'profil' => (object) [
+                    'jenis_usaha' => 'Fashion',
+                    'alamat_usaha' => 'Jl. Sutra No. 10'
+                ]
+            ],
+        ];
+    @endphp
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         @foreach($umkm as $item)
             <div class="card-umkm shadow-md p-6 text-center bg-white rounded-lg">
@@ -54,7 +88,7 @@
                 {{-- Button --}}
                 <a href="{{ route('umkm.show', $item->id) }}" 
                    class="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                   Lihat Detail
+                    Lihat Detail
                 </a>
             </div>
         @endforeach
