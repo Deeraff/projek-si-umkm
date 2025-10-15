@@ -92,25 +92,18 @@
 
             {{-- ANNOUNCEMENT --}}
             <div class="content-card announcement-card">
-                <h3 class="card-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="title-icon" viewBox="0 0 16 16">
-                        <path d="M8 16a2 2 0 0 0 1.985-1.75H6.015A2 2 0 0 0 8 16z"/>
-                        <path d="M8 1.018a6 6 0 0 0-5.905 5.09A1.5 1.5 0 0 0 1 7.5v3.086l-.447.894A.5.5 0 0 0 1 12h14a.5.5 0 0 0 .447-.724L15 10.586V7.5a1.5 1.5 0 0 0-1.095-1.392A6 6 0 0 0 8 1.018z"/>
-                    </svg>
-                    PENGUMUMAN
-                </h3>
-
-                @if($announcements->count())
+                <h3 class="card-title">PENGUMUMAN</h3>
+                @if($announcements->count()) 
                     <ul class="announcement-list">
-                        @foreach($announcements as $item)
+                        @foreach($announcements as $item) 
                             <li class="announcement-item">
-                                <p class="announcement-title">{{ $item->judul }}</p>
+                                <p class="announcement-title">{{ $item->judul }}</p> 
                                 <p class="announcement-text">{{ Str::limit($item->isi, 100) }}</p>
                                 <small class="announcement-date">{{ $item->tanggal ? $item->tanggal->format('d M Y') : '' }}</small>
                             </li>
                         @endforeach
                         <li class="see-more-container">
-                            <a href="{{ route('announcements.index') }}" class="see-more-link">
+                            <a href="{{ route('announcements.index') }}" class="see-more-link"> 
                                 SELENGKAPNYA →
                             </a>
                         </li>
@@ -130,7 +123,6 @@
                 </svg>
                 FAQ
             </h3>
-
             @if($faqs->count())
                 <div class="faq-list">
                     @foreach($faqs as $faq)
@@ -149,7 +141,6 @@
 
     {{-- UMKM Section --}}
     <h2 class="section-title">Data UMKM Unggulan</h2>
-
     @php
         $umkm = [
             (object)[
@@ -172,7 +163,6 @@
             ],
         ];
     @endphp
-
     <div class="umkm-grid">
         @foreach($umkm as $item)
             <div class="umkm-card">

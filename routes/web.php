@@ -4,17 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InformasiController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ContactController; // WAJIB ADA
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
-|--------------------------------------------------------------------------
-| File ini berisi semua rute utama untuk aplikasi.
-| Dibagi menjadi:
-| - Public (landing page)
-| - Authentication (login/register/logout)
-| - Admin (dashboard & fitur internal)
 |--------------------------------------------------------------------------
 */
 
@@ -36,7 +32,8 @@ Route::prefix('landing-page')->name('landing.')->group(function () {
     Route::get('/petunjuk', function () {
         return view('landing-page.petunjuk');
     })->name('petunjuk');
-
+    
+    // !!! INI ADALAH RUTE GET YANG HILANG !!!
     Route::get('/kontak', function () {
         return view('landing-page.kontak');
     })->name('kontak');
@@ -51,6 +48,13 @@ Route::get('/daftar-umkm', [UmkmController::class, 'create'])->name('umkm.regist
 // 📢 Pengumuman & FAQ
 Route::get('/announcements', [LandingPageController::class, 'announcements'])->name('announcements.index');
 Route::get('/faqs', [LandingPageController::class, 'faqs'])->name('faqs.index');
+
+
+// =========================================================================
+// Rute POST untuk Menyimpan Pesan (Harus di luar prefix landing-page)
+// Form di kontak.blade.php mengarah ke sini: route('kontak.store')
+// =========================================================================
+Route::post('/kontak/kirim', [ContactController::class, 'store'])->name('kontak.store');
 
 
 /*
@@ -81,3 +85,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Tambahkan route admin lainnya di sini
 });
+
+
+Route::get('/informasi/kuliner', [InformasiController::class, 'showKuliner'])->name('informasi.kuliner');
+Route::get('/informasi/kerajinan', [InformasiController::class, 'showKerajinan'])->name('informasi.kerajinan');
+Route::get('/informasi/pelatihan', [InformasiController::class, 'showPelatihan'])->name('informasi.pelatihan');

@@ -3,7 +3,7 @@
 @section('title', 'Kontak')
 
 @section('content')
-    {{-- Tambahkan CDN Font Awesome --}}
+    {{-- Tambahkan CDN Font Awesome (sudah benar, tapi kita pindahkan ke sini untuk kerapian) --}}
     @push('styles')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     @endpush
@@ -66,27 +66,43 @@
             {{-- Bagian Form Kontak --}}
             <div>
                 <h3 class="text-xl font-semibold text-green-700 mb-4">Kirim Pesan</h3>
-                <form action="#" method="POST" class="space-y-4">
+                
+                {{-- Tampilkan notifikasi sukses/error --}}
+                @if(session('success'))
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @elseif(session('error'))
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                {{-- PERBAIKAN UTAMA DI SINI --}}
+                <form action="{{ route('kontak.store') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
-                        <label for="nama" class="block text-gray-700 font-medium mb-1">Nama Lengkap</label>
-                        <input type="text" id="nama" name="nama"
+                        <label for="nama_lengkap" class="block text-gray-700 font-medium mb-1">Nama Lengkap</label>
+                        <input type="text" id="nama_lengkap" name="nama_lengkap"
                             class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                            placeholder="Masukkan nama Anda">
+                            placeholder="Masukkan nama Anda" value="{{ old('nama_lengkap') }}">
+                        @error('nama_lengkap')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
                         <label for="email" class="block text-gray-700 font-medium mb-1">Email</label>
                         <input type="email" id="email" name="email"
                             class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                            placeholder="Masukkan email aktif Anda">
+                            placeholder="Masukkan email aktif Anda" value="{{ old('email') }}">
+                        @error('email')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
                     </div>
 
                     <div>
                         <label for="pesan" class="block text-gray-700 font-medium mb-1">Pesan</label>
                         <textarea id="pesan" name="pesan" rows="4"
                             class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                            placeholder="Tulis pesan Anda di sini..."></textarea>
+                            placeholder="Tulis pesan Anda di sini...">{{ old('pesan') }}</textarea>
+                        @error('pesan')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
                     </div>
 
                     <button type="submit"
