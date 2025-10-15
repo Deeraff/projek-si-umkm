@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PemilikUmkm;
 use App\Models\DataUsaha;
 use App\Models\LegalitasUsaha;
-use App\Models\JenisUsaha;
+use App\Models\KategoriJenisUsaha;
 use Illuminate\Support\Facades\DB;
 
 class UmkmController extends Controller
@@ -14,7 +14,7 @@ class UmkmController extends Controller
     public function showForm()
     {
         // Ambil semua jenis usaha untuk dropdown
-        $jenisUsaha = JenisUsaha::all();
+        $jenisUsaha = KategoriJenisUsaha::all();
         return view('umkm.daftar-umkm', compact('jenisUsaha'));
     }
 
@@ -29,7 +29,7 @@ class UmkmController extends Controller
 
             // Step 2: Usaha
             'nama_usaha' => 'required|string|max:150',
-            'jenis_usaha_id' => 'required|exists:jenis_usaha,id',
+            'jenis_usaha_id' => 'required|exists:kategori_jenis_usaha,id',
             'bentuk_usaha' => 'required|string|max:50',
             'alamat_usaha' => 'required|string',
             'desa_kelurahan' => 'required|string|max:100',
@@ -48,12 +48,13 @@ class UmkmController extends Controller
             DB::transaction(function () use ($validated) {
                 // Step 1: Simpan Pemilik (ambil user_id dari login)
                 $pemilik = PemilikUmkm::create([
-                    'user_id' => auth()->id(),
-                    'nama_lengkap' => $validated['nama_lengkap'],
-                    'nik' => $validated['nik'],
-                    'no_hp' => $validated['no_hp'],
-                    'alamat_domisili' => $validated['alamat_domisili'],
-                ]);
+                'nama_lengkap' => $validated['nama_lengkap'],
+                'nik' => $validated['nik'],
+                'no_hp' => $validated['no_hp'],
+                'alamat_domisili' => $validated['alamat_domisili'],
+                'email' => auth()->user()->email, // ambil email dari akun login
+            ]);
+
 
                 // Step 2: Simpan Data Usaha
                 $usaha = DataUsaha::create([
