@@ -18,7 +18,7 @@
 
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="{{ asset('storage/banner1.png') }}" 
+                <img src="{{ asset('storage/kucing-meme.jpg') }}" 
                      class="d-block w-100" 
                      alt="Banner 1"> 
                 <div class="carousel-overlay"></div>
@@ -40,7 +40,7 @@
         </a>
 
         {{-- DAFTARKAN UMKM Button --}}
-        <a href="{{ route('umkm.register') }}" class="action-button action-button-green">
+        <a href="{{ route('umkm.store') }}" class="action-button action-button-green">
             <div class="button-content">
                 <span class="button-text">DAFTARKAN UMKM</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="button-icon" viewBox="0 0 16 16">
