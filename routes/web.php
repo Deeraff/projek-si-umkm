@@ -4,7 +4,19 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashboardController; // Tambahkan ini jika Anda punya DashboardController
+use App\Http\Controllers\DashboardController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+| File ini berisi semua rute utama untuk aplikasi.
+| Dibagi menjadi:
+| - Public (landing page)
+| - Authentication (login/register/logout)
+| - Admin (dashboard & fitur internal)
+|--------------------------------------------------------------------------
+*/
 
 /*
 |--------------------------------------------------------------------------
@@ -12,31 +24,33 @@ use App\Http\Controllers\DashboardController; // Tambahkan ini jika Anda punya D
 |--------------------------------------------------------------------------
 */
 
-// Rute Utama (Beranda)
-// Menggunakan DashboardController atau LandingPageController yang sudah ada
-Route::get('/', [LandingPageController::class, 'index'])->name('beranda'); 
-// Asumsi: DashboardController.php Anda menampilkan daftar UMKM di dashboard
+// 🏠 Halaman utama (beranda) — diarahkan ke landing page
+Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 
-// Rute untuk halaman statis (Informasi, Petunjuk, Kontak)
-Route::group(['as' => 'landing.'], function () {
-    // Rute Informasi
+// 📄 Halaman statis (informasi, petunjuk, kontak)
+Route::prefix('landing-page')->name('landing.')->group(function () {
     Route::get('/informasi', function () {
         return view('landing-page.informasi');
     })->name('informasi');
 
-    // Rute Petunjuk (Diasumsikan harus mengarah ke view petunjuk.blade.php)
     Route::get('/petunjuk', function () {
-        return view('landing-page.petunjuk'); 
+        return view('landing-page.petunjuk');
     })->name('petunjuk');
 
-    // Rute Kontak
     Route::get('/kontak', function () {
         return view('landing-page.kontak');
     })->name('kontak');
 });
 
-// Rute Detail UMKM
+// 🏪 Detail UMKM
 Route::get('/umkm/{id}', [UmkmController::class, 'show'])->name('umkm.show');
+
+// 📝 Form pendaftaran UMKM
+Route::get('/daftar-umkm', [UmkmController::class, 'create'])->name('umkm.register');
+
+// 📢 Pengumuman & FAQ
+Route::get('/announcements', [LandingPageController::class, 'announcements'])->name('announcements.index');
+Route::get('/faqs', [LandingPageController::class, 'faqs'])->name('faqs.index');
 
 
 /*
@@ -45,15 +59,15 @@ Route::get('/umkm/{id}', [UmkmController::class, 'show'])->name('umkm.show');
 |--------------------------------------------------------------------------
 */
 
-// Rute Login
+// 🔐 Login
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
-// Rute Register
+// 🧾 Register
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
-// Rute Logout
+// 🚪 Logout
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
@@ -63,11 +77,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 
-// Area Admin (Anda mungkin ingin menambahkan middleware('auth', 'admin') di sini)
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
-    
-    // Anda bisa tambahkan rute lain untuk kelola data admin di sini
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Tambahkan route admin lainnya di sini
 });

@@ -10,37 +10,50 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    // Menampilkan form login
+    /**
+     * Tampilkan halaman login.
+     */
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-    // Memproses data login
+    /**
+     * Proses login user.
+     */
     public function login(Request $request)
     {
+        // Validasi input
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
+        // Coba autentikasi
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/landing-page'); // Ganti dengan rute tujuan Anda
+
+            // Redirect ke halaman landing page setelah login
+            return redirect()->intended(route('landing.index'));
         }
 
+        // Jika gagal login
         throw ValidationException::withMessages([
             'email' => 'Email atau password salah.',
         ]);
     }
 
-    // Menampilkan form register
+    /**
+     * Tampilkan halaman register.
+     */
     public function showRegistrationForm()
     {
         return view('auth.register');
     }
 
-    // Memproses data register
+    /**
+     * Proses registrasi user baru.
+     */
     public function register(Request $request)
     {
         $request->validate([
@@ -49,6 +62,7 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        // Simpan user baru
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -58,12 +72,18 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login.');
     }
 
-    // Memproses logout
+    /**
+     * Logout user.
+     */
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/landing-page');
+
+        // Redirect ke halaman landing setelah logout
+        return redirect()->route('landing.index');
     }
+
 }
