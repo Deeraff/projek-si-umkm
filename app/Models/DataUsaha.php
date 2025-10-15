@@ -14,13 +14,17 @@ class DataUsaha extends Model
     protected $fillable = [
         'pemilik_id',
         'nama_usaha',
+        'logo',
         'jenis_usaha_id',
         'bentuk_usaha',
         'alamat_usaha',
-        'desa_kelurahan',
-        'kecamatan',
-        'kota_kabupaten',
+        'latitude',
+        'longitude',
+        'no_telp_usaha',
         'status_tempat',
+        'tenaga_kerja_l',
+        'tenaga_kerja_p',
+        'status_umkm',
     ];
 
     public function pemilik()
@@ -30,11 +34,12 @@ class DataUsaha extends Model
 
     public function jenisUsaha()
     {
-        return $this->belongsTo(JenisUsaha::class, 'jenis_usaha_id');
+        return $this->belongsTo(KategoriJenisUsaha::class, 'jenis_usaha_id');
     }
 
-    public function legalitas()
+    public function legalitasUsaha()
     {
         return $this->hasOne(LegalitasUsaha::class, 'usaha_id');
     }
+    
 }

@@ -47,9 +47,9 @@ Route::get('/umkm/{id}', [UmkmController::class, 'show'])->name('umkm.show');
 
 // 📝 Form pendaftaran UMKM
 Route::middleware(['auth'])->group(function () {
-    Route::get('/daftar-umkm', [UmkmController::class, 'create'])->name('umkm.register');
     Route::get('/daftar-umkm', [UmkmController::class, 'showForm'])->name('umkm.form');
     Route::post('/daftar-umkm', [UmkmController::class, 'store'])->name('umkm.store');
+    Route::get('/umkm', [UmkmController::class, 'index'])->name('kelola.umkm');
 });
 
 
