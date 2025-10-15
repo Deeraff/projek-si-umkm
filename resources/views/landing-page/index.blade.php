@@ -40,7 +40,7 @@
         </a>
 
         {{-- DAFTARKAN UMKM Button --}}
-        <a href="{{ route('umkm.register') }}" class="action-button action-button-green">
+        <a href="{{ route('umkm.create') }}" class="action-button action-button-green">
             <div class="button-content">
                 <span class="button-text">DAFTARKAN UMKM</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="button-icon" viewBox="0 0 16 16">

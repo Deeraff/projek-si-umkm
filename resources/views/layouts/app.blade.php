@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     {{-- Custom CSS (gunakan path public, bukan resources) --}}
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/landing.css') }}" rel="stylesheet">
 
     @stack('styles')
 </head>
@@ -77,6 +77,7 @@
     </main>
 
     {{-- Footer --}}
+    {{-- Footer --}}
     <footer class="bg-green-700 text-white mt-10 py-6">
         <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6">
             <div>
@@ -94,6 +95,8 @@
             </div>
         </div>
     </footer>
-</body>
 
+    {{-- Tambahkan ini sebelum body ditutup --}}
+    @stack('scripts')
+</body>
 </html>

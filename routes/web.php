@@ -47,6 +47,8 @@ Route::get('/umkm/{id}', [UmkmController::class, 'show'])->name('umkm.show');
 
 // 📝 Form pendaftaran UMKM
 Route::get('/daftar-umkm', [UmkmController::class, 'create'])->name('umkm.register');
+Route::get('/daftar-umkm', [UmkmController::class, 'showForm'])->name('umkm.form');
+Route::post('/daftar-umkm', [UmkmController::class, 'store'])->name('umkm.store');
 
 // 📢 Pengumuman & FAQ
 Route::get('/announcements', [LandingPageController::class, 'announcements'])->name('announcements.index');
