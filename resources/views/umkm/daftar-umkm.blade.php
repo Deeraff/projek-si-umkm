@@ -59,45 +59,45 @@
             <h3 class="section-title"><i class="fa-solid fa-user title-icon"></i> Data Pemilik / Perorangan</h3>
             <div class="content-grid">
                 
-                {{-- Nama Lengkap Pemilik (Ambil dari data pemilik, fallback ke nama user) --}}
+                {{-- Nama Lengkap Pemilik (Ambil dari data pemilik, fallback ke nama user HANYA JIKA $pemilik belum ada) --}}
                 <div>
                     <label>Nama Lengkap Pemilik <span class="text-red-500">*</span></label>
                     <input type="text" name="nama_lengkap" class="form-input" placeholder="Contoh: Budi Santoso" required 
                         value="{{ old('nama_lengkap', $pemilik->nama_lengkap ?? Auth::User()->name) }}">
                     @error('nama_lengkap') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
-    
-                {{-- Nomor KTP / NIK --}}
+        
+                {{-- Nomor KTP / NIK (Ambil dari $pemilik) --}}
                 <div>
                     <label>Nomor KTP / NIK <span class="text-red-500">*</span></label>
                     <input type="text" name="nik" class="form-input" placeholder="16 digit NIK" maxlength="16" pattern="[0-9]{16}" required 
                            value="{{ old('nik', $pemilik->nik ?? '') }}">
                     @error('nik') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
-    
-                {{-- Nomor KK --}}
+        
+                {{-- Nomor KK (Ambil dari $pemilik) --}}
                 <div>
                     <label>Nomor KK</label>
                     <input type="text" name="no_kk" class="form-input" placeholder="Opsional, 16 digit" maxlength="16" pattern="[0-9]{16}" 
                            value="{{ old('no_kk', $pemilik->no_kk ?? '') }}">
                 </div>
-    
-                {{-- NPWP --}}
+        
+                {{-- NPWP (Ambil dari $pemilik) --}}
                 <div>
                     <label>NPWP</label>
                     <input type="text" name="npwp" class="form-input" placeholder="Opsional, contoh: 12.345.678.9-012.345" 
                            value="{{ old('npwp', $pemilik->npwp ?? '') }}">
                 </div>
-    
-                {{-- Nomor HP / WhatsApp --}}
+        
+                {{-- Nomor HP / WhatsApp (Ambil dari $pemilik) --}}
                 <div>
                     <label>Nomor HP / WhatsApp <span class="text-red-500">*</span></label>
                     <input type="tel" name="no_hp" class="form-input" placeholder="Contoh: 081234567890" pattern="[0-9]{10,13}" required 
                            value="{{ old('no_hp', $pemilik->no_hp ?? '') }}">
                     @error('no_hp') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
-    
-                {{-- Email Aktif (diisi otomatis dan read-only) --}}
+        
+                {{-- Email Aktif (Ambil dari Auth::user()->email dan read-only, karena ini adalah email akun user) --}}
                 <div>
                     <label>Email Aktif <span class="text-red-500">*</span></label>
                     <input type="email" name="email" class="form-input bg-gray-100" placeholder="contoh@email.com" required readonly 
@@ -105,7 +105,7 @@
                     @error('email') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 
-                {{-- Alamat Domisili --}}
+                {{-- Alamat Domisili (Ambil dari $pemilik) --}}
                 <div class="col-span-full">
                     <label>Alamat Domisili <span class="text-red-500">*</span></label>
                     <textarea name="alamat_domisili" rows="2" class="form-input" placeholder="Masukkan alamat lengkap sesuai KTP" required>{{ old('alamat_domisili', $pemilik->alamat_domisili ?? '') }}</textarea>

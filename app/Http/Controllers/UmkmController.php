@@ -10,6 +10,7 @@ use App\Models\KategoriJenisUsaha;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class UmkmController extends Controller
 {
@@ -35,6 +36,28 @@ class UmkmController extends Controller
             'jenisUsaha' => $jenisUsaha,
         ]);
     }
+
+    public function index()
+    {
+        $user = Auth::user();
+    
+        // Ambil data UMKM berdasarkan email user login
+        $pemilik = PemilikUmkm::where('email', $user->email)
+            ->with(['usaha.legalitasUsaha', 'usaha.jenisUsaha'])
+            ->first();
+    
+        // Cek apakah user sudah punya data usaha
+        if (!$pemilik || !$pemilik->usaha) {
+            return redirect()->route('umkm.form')
+                ->with('error', 'Anda belum mendaftarkan data usaha. Silakan isi formulir terlebih dahulu.');
+        }
+    
+        $usaha = $pemilik->usaha;
+        $legalitas = $usaha->legalitasUsaha;
+    
+        return view('umkm.index', compact('pemilik', 'usaha', 'legalitas'));
+    }
+    
 
     public function showForm()
     {
