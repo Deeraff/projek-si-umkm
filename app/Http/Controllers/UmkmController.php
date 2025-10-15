@@ -37,6 +37,28 @@ class UmkmController extends Controller
         ]);
     }
 
+    public function index()
+    {
+        $user = Auth::user();
+    
+        // Ambil data UMKM berdasarkan email user login
+        $pemilik = PemilikUmkm::where('email', $user->email)
+            ->with(['usaha.legalitasUsaha', 'usaha.jenisUsaha'])
+            ->first();
+    
+        // Cek apakah user sudah punya data usaha
+        if (!$pemilik || !$pemilik->usaha) {
+            return redirect()->route('umkm.form')
+                ->with('error', 'Anda belum mendaftarkan data usaha. Silakan isi formulir terlebih dahulu.');
+        }
+    
+        $usaha = $pemilik->usaha;
+        $legalitas = $usaha->legalitasUsaha;
+    
+        return view('umkm.index', compact('pemilik', 'usaha', 'legalitas'));
+    }
+    
+
     public function showForm()
     {
         // Ambil semua jenis usaha untuk dropdown
