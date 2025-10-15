@@ -1,6 +1,12 @@
-@extends('layouts.app')
+@extends('layouts.umkm')
 
 @section('title', 'Daftar UMKM')
+
+@guest
+    {{-- Jika ini adalah view untuk form, pengguna harusnya sudah dicek di controller --}}
+    {{-- Tapi sebagai fallback: --}}
+    <script>window.location.href = "{{ route('login') }}";</script>
+@endguest
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
@@ -44,48 +50,65 @@
 
     <form action="{{ route('umkm.store') }}" method="POST" enctype="multipart/form-data" id="umkmForm">
         @csrf
-
+    
+        {{-- Input Tersembunyi untuk Email (tetap penting) --}}
+        {{-- <input type="hidden" name="user_email_fk" value="{{ $user->email }}"> --}}
+    
         {{-- ================= STEP 1: DATA PEMILIK ================= --}}
         <div class="step active" id="step-1">
             <h3 class="section-title"><i class="fa-solid fa-user title-icon"></i> Data Pemilik / Perorangan</h3>
             <div class="content-grid">
+                
+                {{-- Nama Lengkap Pemilik (Ambil dari data pemilik, fallback ke nama user) --}}
                 <div>
                     <label>Nama Lengkap Pemilik <span class="text-red-500">*</span></label>
-                    <input type="text" name="nama_lengkap" class="form-input" placeholder="Contoh: Budi Santoso" required value="{{ old('nama_lengkap') }}">
+                    <input type="text" name="nama_lengkap" class="form-input" placeholder="Contoh: Budi Santoso" required 
+                        value="{{ old('nama_lengkap', $pemilik->nama_lengkap ?? Auth::User()->name) }}">
                     @error('nama_lengkap') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
-
+    
+                {{-- Nomor KTP / NIK --}}
                 <div>
                     <label>Nomor KTP / NIK <span class="text-red-500">*</span></label>
-                    <input type="text" name="nik" class="form-input" placeholder="16 digit NIK" maxlength="16" pattern="[0-9]{16}" required value="{{ old('nik') }}">
+                    <input type="text" name="nik" class="form-input" placeholder="16 digit NIK" maxlength="16" pattern="[0-9]{16}" required 
+                           value="{{ old('nik', $pemilik->nik ?? '') }}">
                     @error('nik') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
-
+    
+                {{-- Nomor KK --}}
                 <div>
                     <label>Nomor KK</label>
-                    <input type="text" name="no_kk" class="form-input" placeholder="Opsional, 16 digit" maxlength="16" pattern="[0-9]{16}" value="{{ old('no_kk') }}">
+                    <input type="text" name="no_kk" class="form-input" placeholder="Opsional, 16 digit" maxlength="16" pattern="[0-9]{16}" 
+                           value="{{ old('no_kk', $pemilik->no_kk ?? '') }}">
                 </div>
-
+    
+                {{-- NPWP --}}
                 <div>
                     <label>NPWP</label>
-                    <input type="text" name="npwp" class="form-input" placeholder="Opsional, contoh: 12.345.678.9-012.345" value="{{ old('npwp') }}">
+                    <input type="text" name="npwp" class="form-input" placeholder="Opsional, contoh: 12.345.678.9-012.345" 
+                           value="{{ old('npwp', $pemilik->npwp ?? '') }}">
                 </div>
-
+    
+                {{-- Nomor HP / WhatsApp --}}
                 <div>
                     <label>Nomor HP / WhatsApp <span class="text-red-500">*</span></label>
-                    <input type="tel" name="no_hp" class="form-input" placeholder="Contoh: 081234567890" pattern="[0-9]{10,13}" required value="{{ old('no_hp') }}">
+                    <input type="tel" name="no_hp" class="form-input" placeholder="Contoh: 081234567890" pattern="[0-9]{10,13}" required 
+                           value="{{ old('no_hp', $pemilik->no_hp ?? '') }}">
                     @error('no_hp') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
-
+    
+                {{-- Email Aktif (diisi otomatis dan read-only) --}}
                 <div>
                     <label>Email Aktif <span class="text-red-500">*</span></label>
-                    <input type="email" name="email" class="form-input" placeholder="contoh@email.com" required value="{{ old('email') }}">
+                    <input type="email" name="email" class="form-input bg-gray-100" placeholder="contoh@email.com" required readonly 
+                        value="{{ old('email', Auth::user()->email) }}"> 
                     @error('email') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
-
+                
+                {{-- Alamat Domisili --}}
                 <div class="col-span-full">
                     <label>Alamat Domisili <span class="text-red-500">*</span></label>
-                    <textarea name="alamat_domisili" rows="2" class="form-input" placeholder="Masukkan alamat lengkap sesuai KTP" required>{{ old('alamat_domisili') }}</textarea>
+                    <textarea name="alamat_domisili" rows="2" class="form-input" placeholder="Masukkan alamat lengkap sesuai KTP" required>{{ old('alamat_domisili', $pemilik->alamat_domisili ?? '') }}</textarea>
                     @error('alamat_domisili') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
             </div>
@@ -150,21 +173,6 @@
                 <div>
                     <label>Nomor Telepon Usaha <span class="text-red-500">*</span></label>
                     <input type="tel" name="no_telp_usaha" class="form-input" placeholder="Contoh: 0311234567" required value="{{ old('no_telp_usaha') }}">
-                </div>
-
-                <div>
-                    <label>Desa / Kelurahan <span class="text-red-500">*</span></label>
-                    <input type="text" name="desa_kelurahan" class="form-input" placeholder="Contoh: Sukorame" required value="{{ old('desa_kelurahan') }}">
-                </div>
-
-                <div>
-                    <label>Kecamatan <span class="text-red-500">*</span></label>
-                    <input type="text" name="kecamatan" class="form-input" placeholder="Contoh: Kediri Barat" required value="{{ old('kecamatan') }}">
-                </div>
-
-                <div>
-                    <label>Kota / Kabupaten <span class="text-red-500">*</span></label>
-                    <input type="text" name="kota_kabupaten" class="form-input" placeholder="Contoh: Kediri" required value="{{ old('kota_kabupaten') }}">
                 </div>
 
                 <div>

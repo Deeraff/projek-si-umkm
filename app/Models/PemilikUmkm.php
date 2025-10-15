@@ -12,10 +12,12 @@ class PemilikUmkm extends Model
     protected $table = 'pemilik_umkm';
 
     protected $fillable = [
-        'user_id',
         'nama_lengkap',
         'nik',
+        'no_kk',
+        'npwp',
         'no_hp',
+        'email',
         'alamat_domisili',
     ];
 

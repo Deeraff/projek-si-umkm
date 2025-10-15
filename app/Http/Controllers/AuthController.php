@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\PemilikUmkm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -60,15 +62,36 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            // 'role' tidak perlu divalidasi/diminta karena sudah default
         ]);
-
-        // Simpan user baru
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
+    
+        // Menggunakan transaksi untuk menjamin kedua tabel tersimpan
+        DB::transaction(function () use ($request) {
+            
+            // 1. Simpan user baru di tabel users
+            // Kolom 'role' akan otomatis terisi 'Pemilik UMKM' oleh database
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                // 'role' TIDAK perlu dimasukkan di sini jika sudah ada DEFAULT VALUE di DB
+                // atau pastikan Anda tidak memasukkan 'role' di $fillable jika tidak diisi
+            ]);
+    
+            PemilikUmkm::create([
+                'email'             => $user->email, 
+                'nama_lengkap'      => $request->name, 
+                
+                // MENGISI SEMUA KOLOM NOT NULL DENGAN PLACEHOLDER YANG VALID:
+                // Sesuai skema: nik, no_hp, dan alamat_domisili adalah NOT NULL
+                'nik'               => '0',      // Harus 16 karakter (CHAR)
+                'no_hp'             => '0',                     
+                'alamat_domisili'   => 'Alamat Belum Diisi',    // Harus ada nilai
+                
+                // Kolom NULLABLE (no_kk, npwp) akan otomatis NULL
+            ]);
+        });
+    
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login.');
     }
 
