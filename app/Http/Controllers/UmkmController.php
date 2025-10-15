@@ -10,6 +10,7 @@ use App\Models\KategoriJenisUsaha;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class UmkmController extends Controller
 {

@@ -47,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/daftar-umkm', [UmkmController::class, 'create'])->name('umkm.register');
     Route::get('/daftar-umkm', [UmkmController::class, 'showForm'])->name('umkm.form');
     Route::post('/daftar-umkm', [UmkmController::class, 'store'])->name('umkm.store');
+    Route::get('/umkm-saya', [UmkmController::class, 'index'])->name('umkm.index');
 });
 
 

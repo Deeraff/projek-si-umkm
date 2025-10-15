@@ -39,17 +39,40 @@
             <div class="button-shine"></div>
         </a>
 
-        {{-- DAFTARKAN UMKM Button --}}
-        <a href="{{ route('umkm.store') }}" class="action-button action-button-green">
-            <div class="button-content">
-                <span class="button-text">DAFTARKAN UMKM</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="button-icon" viewBox="0 0 16 16">
-                    <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5h1.5a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5"/>
-                    <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                </svg>
-            </div>
-            <div class="button-shine"></div>
-        </a>
+        {{-- DAFTARKAN / LIHAT UMKM Button --}}
+        @if(Auth::check())
+            @if($hasUmkm)
+                <a href="{{ route('umkm.index') }}" class="action-button action-button-green">
+                    <div class="button-content">
+                        <span class="button-text">LIHAT UMKM</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="button-icon" viewBox="0 0 16 16">
+                            <path d="M6.5 0a.5.5 0 0 1 .5.5V2h2V.5a.5.5 0 0 1 1 0V2h.5A2.5 2.5 0 0 1 13 4.5V6H3V4.5A2.5 2.5 0 0 1 5.5 2H6V.5a.5.5 0 0 1 .5-.5zM3 7h10v5.5A2.5 2.5 0 0 1 10.5 15h-5A2.5 2.5 0 0 1 3 12.5V7z"/>
+                        </svg>
+                    </div>
+                    <div class="button-shine"></div>
+                </a>
+            @else
+                <a href="{{ route('umkm.store') }}" class="action-button action-button-green">
+                    <div class="button-content">
+                        <span class="button-text">DAFTARKAN UMKM</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="button-icon" viewBox="0 0 16 16">
+                            <path d="M8 6.5a.5.5 0 0 1 .5.5v1.5h1.5a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5"/>
+                            <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
+                        </svg>
+                    </div>
+                    <div class="button-shine"></div>
+                </a>
+            @endif
+        @else
+            {{-- Jika belum login --}}
+            <a href="{{ route('login') }}" class="action-button action-button-green">
+                <div class="button-content">
+                    <span class="button-text">DAFTARKAN UMKM</span>
+                </div>
+                <div class="button-shine"></div>
+            </a>
+        @endif
+
 
         {{-- PENGADUAN Button --}}
         <a href="{{ url('/pengaduan') }}" class="action-button action-button-yellow">
