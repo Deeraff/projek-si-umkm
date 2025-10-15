@@ -24,29 +24,6 @@
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <h1 class="text-xl font-bold text-green-700">APP UMKM</h1>
 
-            {{-- Navigasi Utama --}}
-            <nav class="space-x-6 hidden md:flex">
-                <a href="{{ route('landing.index') }}"
-                    class="{{ request()->routeIs('landing.index') ? 'text-green-600 font-bold' : 'hover:text-green-600' }}">
-                    Beranda
-                </a>
-
-                <a href="{{ route('landing.informasi') }}"
-                    class="{{ request()->routeIs('landing.informasi') ? 'text-green-600 font-bold' : 'hover:text-green-600' }}">
-                    Informasi
-                </a>
-
-                <a href="{{ route('landing.petunjuk') }}"
-                    class="{{ request()->routeIs('landing.petunjuk') ? 'text-green-600 font-bold' : 'hover:text-green-600' }}">
-                    Petunjuk
-                </a>
-
-                <a href="{{ route('landing.kontak') }}"
-                    class="{{ request()->routeIs('landing.kontak') ? 'text-green-600 font-bold' : 'hover:text-green-600' }}">
-                    Kontak
-                </a>
-            </nav>
-
             <div class="flex items-center space-x-4">
                 @guest
                     <a href="{{ route('login') }}" class="hover:text-green-600 font-medium">Login</a>
