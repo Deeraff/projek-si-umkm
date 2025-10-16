@@ -16,22 +16,22 @@ class LandingPageController extends Controller
         $announcements = Announcement::latest()->take(3)->get();
         $faqs = Faq::take(5)->get();
 
+        // Ambil daftar UMKM (misalnya 6 terbaru)
+        $daftarUmkm = DataUsaha::latest()->take(6)->get();
+
         $hasUmkm = false;
 
         if (Auth::check()) {
-            // Ambil data pemilik berdasarkan email user login
             $pemilik = PemilikUmkm::where('email', Auth::user()->email)->first();
 
             if ($pemilik) {
-                // Cek apakah pemilik tersebut punya data usaha
                 $hasUmkm = DataUsaha::where('pemilik_id', $pemilik->id)->exists();
             }
         }
 
         // Kirim data ke view
-        return view('landing-page.index', compact('announcements', 'faqs', 'hasUmkm'));
+        return view('landing-page.index', compact('announcements', 'faqs', 'hasUmkm', 'daftarUmkm'));
     }
-
 
 
     public function announcements()

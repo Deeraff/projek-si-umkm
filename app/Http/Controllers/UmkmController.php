@@ -66,6 +66,7 @@ class UmkmController extends Controller
         return view('umkm.daftar-umkm', compact('jenisUsaha'));
     }
 
+
     public function store(Request $request)
     {
         // Cek apakah user sudah login. Jika tidak (walaupun ada middleware auth), hentikan.
@@ -194,4 +195,13 @@ class UmkmController extends Controller
             return back()->withInput()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data. Pastikan semua input benar. Pesan Error: ' . $e->getMessage()]);
         }
     }
+
+    public function show($id)
+    {
+        // Ambil data usaha berdasarkan ID (misal tabel data_usaha)
+        $usaha = \App\Models\DataUsaha::with(['pemilik', 'legalitasUsaha', 'jenisUsaha'])->findOrFail($id);
+
+        return view('umkm.show', compact('usaha'));
+    }
+
 }
