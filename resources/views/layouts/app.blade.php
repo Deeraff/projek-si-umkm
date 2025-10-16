@@ -88,7 +88,7 @@
                     </div>
                     {{-- Tombol "Kelola UMKM" untuk Pemilik UMKM (dipertahankan di sebelah kiri) --}}
                     @if (Auth::user()->role === 'pemilik UMKM')
-                        <a href="#"
+                        <a href="{{ route('kelola.umkm') }}"
                             class="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-medium text-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd"

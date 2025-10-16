@@ -1,0 +1,282 @@
+/* CSS Kustom untuk menyesuaikan tampilan */
+:root {
+    --sidebar-bg: #343a40;
+    --header-bg: #2a9d8f;
+    --content-bg: #e9ecef;
+    --text-light: #f8f9fa;
+    --card-blue: #007bff;
+    --card-green: #28a745;
+    --card-orange: #fd7e14;
+}
+
+/* General reset dan Body */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-color: var(--content-bg);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- Sidebar (FIXED) --- */
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    position: fixed; /* Sidebar sudah fixed */
+    top: 0;
+    left: 0;
+    height: 100%;
+    transition: all 0.3s;
+    z-index: 1030; /* Pastikan di atas konten lain */
+}
+
+.sidebar-header {
+    /* MENGATUR TINGGI TETAP 80PX UNTUK MENGAKOMODASI 2 BARIS TEKS */
+    padding: 10px 20px; /* Menambah padding vertikal agar logo dan teks tidak terpotong */
+    display: flex;
+    align-items: center; /* Memastikan item terpusat vertikal */
+    border-bottom: 1px solid #495057;
+    height: 80px; /* **PERUBAHAN:** Meningkatkan tinggi agar sejajar dengan main-header */
+    box-sizing: border-box; /* Memastikan padding tidak menambah total height */
+}
+
+.sidebar-header img {
+    width: 40px;
+    margin-right: 15px;
+}
+
+.sidebar-header h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu-item {
+    padding: 0 20px;
+}
+
+.sidebar-menu-item.header {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    color: #adb5bd;
+    text-transform: uppercase;
+}
+
+.sidebar-menu-item a {
+    color: var(--text-light);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.sidebar-menu-item a:hover,
+.sidebar-menu-item.active a {
+    background-color: #495057;
+}
+
+.sidebar-menu-item a i {
+    margin-right: 15px;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-logout {
+    padding: 20px;
+    border-top: 1px solid #495057;
+}
+
+.sidebar-logout a {
+    color: var(--text-light);
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.sidebar-logout a:hover {
+    background-color: #dc3545;
+}
+
+.sidebar-logout a i {
+    margin-right: 10px;
+}
+
+/* --- Main Wrapper & Header (FIXED) --- */
+
+/* Wrapper hanya menentukan posisi awal konten */
+.main-wrapper {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* HEADER dibuat FIXED */
+.main-header {
+    position: fixed; /* Mengunci header saat scrolling */
+    top: 0;
+    left: 260px; /* Jarak dari kiri = lebar sidebar */
+    width: calc(100% - 260px); /* Lebar sisanya */
+    background-color: var(--header-bg);
+    color: white;
+    padding: 10px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px; /* **PERUBAHAN:** Meningkatkan tinggi agar sejajar dengan sidebar-header */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1020; /* Lebih rendah dari sidebar, lebih tinggi dari konten */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-left .menu-toggle {
+    font-size: 1.5rem;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.header-left h4 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-right .admin-info {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.header-right .admin-info i {
+    font-size: 1.8rem;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+}
+
+.header-right .admin-info span {
+    margin-left: 10px;
+    font-weight: 500;
+}
+
+/* KONTEN UTAMA: Tambahkan padding atas agar tidak tertutup header fixed */
+.main-content {
+    padding: 25px;
+    /* PERUBAHAN: Menyesuaikan padding atas dengan tinggi header baru (80px) */
+    padding-top: calc(25px + 80px); 
+    flex-grow: 1;
+}
+
+
+/* --- Stat Cards --- */
+.stat-card {
+    color: white;
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+/* ... (sisa CSS) ... */
+.stat-card .inner { z-index: 1; }
+.stat-card h3 { font-size: 2.5rem; font-weight: 700; margin: 0; }
+.stat-card p { margin: 0; font-size: 1.1rem; }
+.stat-card .icon { 
+    position: absolute; 
+    top: 50%; 
+    right: 20px; 
+    transform: translateY(-50%); 
+    font-size: 5rem; 
+    opacity: 0.2; 
+    transition: all 0.3s;
+}
+.stat-card:hover .icon {
+    transform: translateY(-50%) scale(1.1);
+    opacity: 0.3;
+}
+.stat-card-footer {
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 5px 0;
+    text-align: center;
+    margin: 20px -20px -20px -20px; 
+    display: block;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.2s;
+}
+.stat-card-footer:hover { background-color: rgba(0, 0, 0, 0.3); color: white; }
+
+.bg-custom-blue { background-color: var(--card-blue); }
+.bg-custom-green { background-color: var(--card-green); }
+.bg-custom-orange { background-color: var(--card-orange); }
+
+.map-card {
+    margin-top: 30px;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+.map-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* --- CSS Tambahan Baru --- */
+
+/* Card UMKM */
+.card-umkm {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+.card-umkm:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+.card-umkm img {
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+/* Section titles */
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #166534; /* hijau */
+    margin-bottom: 1rem;
+}
+
+/* Footer */
+footer {
+    background: #166534;
+}
+footer a {
+    color: #fff;
+}
+footer a:hover {
+    text-decoration: underline;
+}
