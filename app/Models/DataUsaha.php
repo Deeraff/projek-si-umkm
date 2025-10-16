@@ -21,6 +21,7 @@ class DataUsaha extends Model
         'kecamatan',
         'kota_kabupaten',
         'status_tempat',
+        'foto' // jika pakai kolom foto
     ];
 
     public function pemilik()
@@ -28,9 +29,10 @@ class DataUsaha extends Model
         return $this->belongsTo(PemilikUmkm::class, 'pemilik_id');
     }
 
+    // pastikan ini merujuk ke model KategoriJenisUsaha
     public function jenisUsaha()
     {
-        return $this->belongsTo(JenisUsaha::class, 'jenis_usaha_id');
+        return $this->belongsTo(KategoriJenisUsaha::class, 'jenis_usaha_id');
     }
 
     public function legalitas()
