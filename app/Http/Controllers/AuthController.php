@@ -81,14 +81,6 @@ class AuthController extends Controller
             PemilikUmkm::create([
                 'email'             => $user->email, 
                 'nama_lengkap'      => $request->name, 
-                
-                // MENGISI SEMUA KOLOM NOT NULL DENGAN PLACEHOLDER YANG VALID:
-                // Sesuai skema: nik, no_hp, dan alamat_domisili adalah NOT NULL
-                'nik'               => '0',      // Harus 16 karakter (CHAR)
-                'no_hp'             => '0',                     
-                'alamat_domisili'   => 'Alamat Belum Diisi',    // Harus ada nilai
-                
-                // Kolom NULLABLE (no_kk, npwp) akan otomatis NULL
             ]);
         });
     

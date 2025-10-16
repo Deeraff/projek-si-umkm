@@ -10,6 +10,7 @@ use App\Models\KategoriJenisUsaha;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class UmkmController extends Controller
 {
@@ -36,12 +37,35 @@ class UmkmController extends Controller
         ]);
     }
 
+    public function index()
+    {
+        $user = Auth::user();
+    
+        // Ambil data UMKM berdasarkan email user login
+        $pemilik = PemilikUmkm::where('email', $user->email)
+            ->with(['usaha.legalitasUsaha', 'usaha.jenisUsaha'])
+            ->first();
+    
+        // Cek apakah user sudah punya data usaha
+        if (!$pemilik || !$pemilik->usaha) {
+            return redirect()->route('umkm.form')
+                ->with('error', 'Anda belum mendaftarkan data usaha. Silakan isi formulir terlebih dahulu.');
+        }
+    
+        $usaha = $pemilik->usaha;
+        $legalitas = $usaha->legalitasUsaha;
+    
+        return view('umkm.index', compact('pemilik', 'usaha', 'legalitas'));
+    }
+    
+
     public function showForm()
     {
         // Ambil semua jenis usaha untuk dropdown
         $jenisUsaha = KategoriJenisUsaha::all();
         return view('umkm.daftar-umkm', compact('jenisUsaha'));
     }
+
 
     public function store(Request $request)
     {
@@ -171,4 +195,13 @@ class UmkmController extends Controller
             return back()->withInput()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data. Pastikan semua input benar. Pesan Error: ' . $e->getMessage()]);
         }
     }
+
+    public function show($id)
+    {
+        // Ambil data usaha berdasarkan ID (misal tabel data_usaha)
+        $usaha = \App\Models\DataUsaha::with(['pemilik', 'legalitasUsaha', 'jenisUsaha'])->findOrFail($id);
+
+        return view('umkm.show', compact('usaha'));
+    }
+
 }
