@@ -30,15 +30,23 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
-
+    
         // Coba autentikasi
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            // Redirect ke halaman landing page setelah login
+    
+            // 🎯 LOGIKA CEK ROLE
+            $user = Auth::user();
+    
+            if ($user->role === 'admin') {
+                // Arahkan admin ke dashboard admin
+                return redirect()->intended(route('admin.dashboard')); 
+            }
+    
+            // Arahkan non-admin ke landing page default
             return redirect()->intended(route('landing.index'));
         }
-
+    
         // Jika gagal login
         throw ValidationException::withMessages([
             'email' => 'Email atau password salah.',
