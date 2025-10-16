@@ -71,18 +71,40 @@
 @endsection
 
 @section('scripts')
-    <script>
-        // Inisialisasi map
-        // Pastikan library Leaflet.js sudah dimuat sebelum skrip ini berjalan
-        var map = L.map('map').setView([-7.810969841181508, 111.9921971809567], 14);
+<script>
+    // Pastikan variabel Blade menggunakan $data_usaha
+    var umkmData = @json($data_usaha ?? []); 
 
-        // Gunakan tiles dari OSM
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+    // ... inisialisasi map ...
+    var defaultLat = -7.810969841181508; 
+    var defaultLng = 111.9921971809567;
+    // PENTING: Menggunakan 'latitude' dan 'longitude'
+    var initialLat = umkmData.length > 0 ? umkmData[0].latitude : defaultLat;
+    var initialLng = umkmData.length > 0 ? umkmData[0].longitude : defaultLng;
 
-        // Contoh: Tambahkan marker
-        L.marker([-7.810969841181508, 111.9921971809567]).addTo(map)
-            .bindPopup('Lokasi UMKM Anda');
-    </script>
+    var map = L.map('map').setView([initialLat, initialLng], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // 2. Loop data dan tambahkan marker
+    let markersCount = 0;
+    umkmData.forEach(function(usaha) {
+        // PENTING: Menggunakan 'latitude' dan 'longitude'
+        if (usaha.latitude && usaha.longitude) {
+            var lat = parseFloat(usaha.latitude);
+            var lng = parseFloat(usaha.longitude);
+            
+            // Menggunakan 'nama_usaha' dan 'alamat_usaha'
+            var popupContent = `
+                <b>${usaha.nama_usaha}</b><br>
+                ${usaha.alamat_usaha ? usaha.alamat_usaha : 'Alamat tidak tersedia'}
+            `;
+            
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup(popupContent);
+        }
+    });
+</script>
 @endsection
