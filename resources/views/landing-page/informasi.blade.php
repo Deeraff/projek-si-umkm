@@ -17,7 +17,7 @@
     {{-- Grid untuk menampung kartu-kartu informasi --}}
     <div class="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6">
         
-        {{-- Kartu Informasi 1: Dibuat menjadi link --}}
+        {{-- Kartu Informasi 1: Kuliner --}}
         <a href="{{ route('informasi.kuliner') }}" class="block">
             <div class="bg-green-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition p-5 h-full">
                 <img src="{{ asset('storage/umkm1.jpg') }}" alt="UMKM Kuliner" class="rounded-lg w-full h-40 object-cover mb-4">
@@ -28,7 +28,7 @@
             </div>
         </a>
 
-        {{-- Kartu Informasi 2: Dibuat menjadi link --}}
+        {{-- Kartu Informasi 2: Kerajinan --}}
         <a href="{{ route('informasi.kerajinan') }}" class="block">
             <div class="bg-green-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition p-5 h-full">
                 <img src="{{ asset('storage/umkm2.jpg') }}" alt="Kerajinan Tangan" class="rounded-lg w-full h-40 object-cover mb-4">
@@ -39,7 +39,7 @@
             </div>
         </a>
 
-        {{-- Kartu Informasi 3: Dibuat menjadi link --}}
+        {{-- Kartu Informasi 3: Pelatihan --}}
         <a href="{{ route('informasi.pelatihan') }}" class="block">
             <div class="bg-green-50 rounded-lg shadow hover:shadow-lg hover:scale-105 transition p-5 h-full">
                 <img src="{{ asset('storage/umkm3.jpg') }}" alt="Pelatihan UMKM" class="rounded-lg w-full h-40 object-cover mb-4">

@@ -64,14 +64,25 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="map-card">
-                <img src="https://media.wired.com/photos/59269cd37034dc5f91bec0f1/master/w_2560%2Cc_limit/GoogleMapTA.jpg"
-                    alt="Peta Lokasi UMKM">
+            <div id="map" style="height: 400px;">
             </div>
         </div>
     </div>
 @endsection
 
-{{-- @section('scripts')
-    // Jika ada JavaScript spesifik untuk dashboard
-@endsection --}}
+@section('scripts')
+    <script>
+        // Inisialisasi map
+        // Pastikan library Leaflet.js sudah dimuat sebelum skrip ini berjalan
+        var map = L.map('map').setView([-7.810969841181508, 111.9921971809567], 14);
+
+        // Gunakan tiles dari OSM
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Contoh: Tambahkan marker
+        L.marker([-7.810969841181508, 111.9921971809567]).addTo(map)
+            .bindPopup('Lokasi UMKM Anda');
+    </script>
+@endsection
