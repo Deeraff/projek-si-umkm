@@ -300,25 +300,82 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Step navigation
     let currentStep = 1;
     const totalSteps = 3;
     const steps = document.querySelectorAll('.step');
+
+    // Fungsi untuk tampilkan step
     const showStep = (step) => {
         steps.forEach((el, i) => el.classList.toggle('active', i + 1 === step));
         document.querySelectorAll('.step-indicator div').forEach((el, i) => el.classList.toggle('active', i + 1 === step));
         document.getElementById('prevBtn').style.display = step === 1 ? 'none' : 'inline-flex';
         document.getElementById('nextBtn').style.display = step === totalSteps ? 'none' : 'inline-flex';
         document.getElementById('submitBtn').classList.toggle('hidden', step !== totalSteps);
+
+        // 🌍 Re-render map agar tampil sempurna di Step 2
+        if (step === 2 && typeof map !== 'undefined') {
+            setTimeout(() => map.invalidateSize(), 300);
+        }
     };
-    document.getElementById('nextBtn').addEventListener('click', () => { if (currentStep < totalSteps) { currentStep++; showStep(currentStep); }});
-    document.getElementById('prevBtn').addEventListener('click', () => { if (currentStep > 1) { currentStep--; showStep(currentStep); }});
+
+    // Fungsi validasi field wajib
+    const validateStep = (step) => {
+        const currentForm = document.querySelector(`#step-${step}`);
+        const requiredInputs = currentForm.querySelectorAll('[required]');
+        let isValid = true;
+
+        // Hapus pesan error lama
+        currentForm.querySelectorAll('.error-message').forEach(el => el.remove());
+
+        requiredInputs.forEach(input => {
+            if (!input.value.trim()) {
+                isValid = false;
+
+                // Tambah pesan error di bawah input kosong
+                const error = document.createElement('small');
+                error.classList.add('error-message');
+                error.style.color = '#dc2626';
+                error.style.fontSize = '0.875rem';
+                error.textContent = 'Kolom ini wajib diisi';
+                input.insertAdjacentElement('afterend', error);
+
+                // Highlight border merah
+                input.classList.add('border-red-500');
+                input.addEventListener('input', () => input.classList.remove('border-red-500'));
+            }
+        });
+
+        return isValid;
+    };
+
+    // Event navigasi step
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        if (validateStep(currentStep)) {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                showStep(currentStep);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        } else {
+            // Scroll ke atas agar error kelihatan
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentStep > 1) {
+            currentStep--;
+            showStep(currentStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
     showStep(currentStep);
 
-    // 🌍 Leaflet map
+    // 🌍 Leaflet map setup
     const map = L.map('map').setView([-7.967, 112.635], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     let marker;
