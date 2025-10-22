@@ -22,9 +22,6 @@ class DataUsaha extends Model
         'longitude',
         'no_telp_usaha',
         'status_tempat',
-        'tenaga_kerja_l',
-        'tenaga_kerja_p',
-        'status_umkm',
     ];
 
     public function pemilik()
@@ -32,6 +29,7 @@ class DataUsaha extends Model
         return $this->belongsTo(PemilikUmkm::class, 'pemilik_id');
     }
 
+    // pastikan ini merujuk ke model KategoriJenisUsaha
     public function jenisUsaha()
     {
         return $this->belongsTo(KategoriJenisUsaha::class, 'jenis_usaha_id');
