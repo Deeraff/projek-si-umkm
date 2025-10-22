@@ -21,7 +21,7 @@ class KategoriJenisUsahaController extends Controller
         // Ambil semua data kategori, diurutkan berdasarkan nama
         $data_kategori = KategoriJenisUsaha::orderBy('nama_jenis', 'asc')->get();
 
-        return view('admin.kategori_jenis_usaha', compact('data_kategori'));
+        return view('admin.kategori.index', compact('data_kategori'));
     }
 
     /**
@@ -33,7 +33,7 @@ class KategoriJenisUsahaController extends Controller
             return redirect('/')->with('error', 'Akses Ditolak.');
         }
         
-        return view('admin.kategori_create');
+        return view('admin.kategori.create');
     }
 
     /**
@@ -44,17 +44,17 @@ class KategoriJenisUsahaController extends Controller
         if (Auth::check() && Auth::user()->role !== 'admin') {
             return redirect('/')->with('error', 'Akses Ditolak.');
         }
-
+    
         $request->validate([
             'nama_jenis' => 'required|string|max:255|unique:kategori_jenis_usaha,nama_jenis',
-            'deskripsi_kategori' => 'nullable|string',
+            'deskripsi' => 'nullable|string',
         ]);
-
+    
         KategoriJenisUsaha::create([
             'nama_jenis' => $request->nama_jenis,
-            'deskripsi_kategori' => $request->deskripsi_kategori,
+            'deskripsi' => $request->deskripsi, // ✅ perbaikan di sini
         ]);
-
+    
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
@@ -67,7 +67,7 @@ class KategoriJenisUsahaController extends Controller
             return redirect('/')->with('error', 'Akses Ditolak.');
         }
         
-        return view('admin.kategori_edit', compact('kategori'));
+        return view('admin.kategori.edit', compact('kategori'));
     }
 
     /**
@@ -78,17 +78,17 @@ class KategoriJenisUsahaController extends Controller
         if (Auth::check() && Auth::user()->role !== 'admin') {
             return redirect('/')->with('error', 'Akses Ditolak.');
         }
-
+    
         $request->validate([
             'nama_jenis' => 'required|string|max:255|unique:kategori_jenis_usaha,nama_jenis,' . $kategori->id,
-            'deskripsi_kategori' => 'nullable|string',
+            'deskripsi' => 'nullable|string',
         ]);
-
+    
         $kategori->update([
             'nama_jenis' => $request->nama_jenis,
-            'deskripsi_kategori' => $request->deskripsi_kategori,
+            'deskripsi' => $request->deskripsi, // ✅ perbaikan di sini
         ]);
-
+    
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori ' . $kategori->nama_jenis . ' berhasil diperbarui.');
     }
 
