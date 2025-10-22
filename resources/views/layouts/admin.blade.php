@@ -39,22 +39,36 @@
 
         <ul class="sidebar-menu">
             <li class="sidebar-menu-item header">Menu Utama</li>
+
+            {{-- Dashboard --}}
             <li class="sidebar-menu-item @yield('dashboard_active')">
-                <a href="#">
+                <a href="{{ route('admin.dashboard') }}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
-            <li class="sidebar-menu-item">
-                <a href="#">
-                    <i class="fas fa-users"></i>
+
+            {{-- UMKM Pendaftar --}}
+            <li class="sidebar-menu-item @yield('umkm_pendaftar_active')">
+                <a href="{{ route('admin.umkm.pendaftar.index') }}">
+                    <i class="fas fa-store"></i>
                     <span>UMKM Pendaftar</span>
                 </a>
             </li>
-            <li class="sidebar-menu-item">
-                <a href="#">
+
+            {{-- Kategori Jenis Usaha --}}
+            <li class="sidebar-menu-item @yield('kategori_active')">
+                <a href="{{ route('admin.kategori.index') }}">
                     <i class="fas fa-tags"></i>
-                    <span>Kategori UMKM</span>
+                    <span>Kategori</span>
+                </a>
+            </li>
+
+            {{-- Pemilik UMKM --}}
+            <li class="sidebar-menu-item @yield('pemilik_active')">
+                <a href="{{ route('admin.pemilik.index') }}">
+                    <i class="fas fa-user"></i>
+                    <span>Pemilik UMKM</span>
                 </a>
             </li>
         </ul>

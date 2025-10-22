@@ -11,8 +11,10 @@ class KategoriJenisUsaha extends Model
 
     protected $table = 'kategori_jenis_usaha';
 
-    // pastikan kolom ini sesuai di db
-    protected $fillable = ['jenis', 'deskripsi'];
+    protected $fillable = [
+        'nama_jenis', 
+        'deskripsi',
+    ];
 
     // relasi: satu kategori punya banyak usaha
     public function usaha()
