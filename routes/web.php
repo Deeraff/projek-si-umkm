@@ -8,6 +8,7 @@ use App\Http\Controllers\InformasiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ContactController; // WAJIB ADA
 use App\Http\Controllers\KategoriJenisUsahaController;
+use App\Http\Controllers\PemilikUmkmController;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,11 +90,26 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/umkm-pendaftar', [DashboardController::class, 'umkmPendaftarIndex'])->name('umkm.pendaftar.index');
+        Route::get('/umkm/umkm-pendaftar', [DashboardController::class, 'umkmPendaftarIndex'])->name('umkm.pendaftar.index');
         Route::patch('/umkm/{umkm}/verify', [DashboardController::class, 'verify'])->name('umkm.verify');
         Route::get('/umkm/{umkm}/show', [DashboardController::class, 'show'])->name('umkm.show');
         Route::delete('/umkm/{umkm}', [DashboardController::class, 'destroy'])->name('umkm.destroy');
-        Route::resource('kategori', KategoriJenisUsahaController::class)->except(['show']);
+        Route::resource('kategori', KategoriJenisUsahaController::class)->names([
+            'index'   => 'kategori.index',
+            'create'  => 'kategori.create',
+            'store'   => 'kategori.store',
+            'edit'    => 'kategori.edit',
+            'update'  => 'kategori.update',
+            'destroy' => 'kategori.destroy',
+        ]);
+        Route::resource('pemilik', PemilikUmkmController::class)->names([
+            'index'   => 'pemilik.index',
+            'create'  => 'pemilik.create',
+            'store'   => 'pemilik.store',
+            'edit'    => 'pemilik.edit',
+            'update'  => 'pemilik.update',
+            'destroy' => 'pemilik.destroy',
+        ]);
 });
 
 

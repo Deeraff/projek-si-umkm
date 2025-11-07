@@ -39,21 +39,37 @@ class DashboardController extends Controller
     /**
      * Tampilkan daftar UMKM yang berstatus 'unverified' (Pendaftar).
      */
-    public function umkmPendaftarIndex()
+    public function umkmPendaftarIndex(Request $request)
     {
-        // Pengecekan Otorisasi Admin (Penting!)
+        // Pastikan hanya admin yang bisa mengakses
         if (Auth::check() && Auth::user()->role !== 'admin') {
             return redirect('/')->with('error', 'Akses Ditolak. Anda bukan admin.');
         }
-
-        // PERBAIKAN: Menggunakan nama relasi yang benar: 'jenisUsaha'
-        $data_umkm = DataUsaha::with(['pemilik', 'jenisUsaha'])
-            ->where('status_umkm', 'unverified')
-            ->orderBy('created_at', 'asc')
-            ->get(); 
-
-        return view('admin.umkm_pendaftar', compact('data_umkm'));
-    }
+    
+        // Ambil input dari form
+        $search = $request->input('search');
+        $status = $request->input('status_umkm');
+    
+        // Query utama dengan relasi
+        $query = DataUsaha::with(['pemilik', 'jenisUsaha']);
+    
+        // Filter status (default: unverified)
+        if (!empty($status) && $status !== 'semua') {
+            $query->where('status_umkm', $status);
+        } else {
+            $query->where('status_umkm', 'unverified'); // default tampilan awal
+        }
+    
+        // Filter pencarian nama usaha
+        if (!empty($search)) {
+            $query->where('nama_usaha', 'like', '%' . $search . '%');
+        }
+    
+        // Urutkan dari paling baru
+        $data_umkm = $query->orderBy('created_at', 'desc')->get();
+    
+        return view('admin.umkm.umkm_pendaftar', compact('data_umkm'));
+    }    
 
     /**
      * Lakukan verifikasi UMKM, mengubah status_umkm menjadi 'verified'.
@@ -74,17 +90,17 @@ class DashboardController extends Controller
     /**
      * Tampilkan detail UMKM.
      */
-    public function show(DataUsaha $umkm)
+    public function show($id)
     {
-        // Pengecekan Otorisasi Admin
         if (Auth::check() && Auth::user()->role !== 'admin') {
             return redirect('/')->with('error', 'Akses Ditolak.');
         }
-        
-        // Asumsi ada view detail, Anda bisa mengembangkannya di sini.
-        // return view('admin.umkm_detail', compact('umkm'));
-        return redirect()->back()->with('info', 'Halaman detail UMKM belum diimplementasikan.');
-    }
+    
+        // Hapus 'dataUsaha' karena model ini sudah DataUsaha
+        $umkm = DataUsaha::with(['jenisUsaha', 'pemilik', 'legalitasUsaha'])->findOrFail($id);
+    
+        return view('admin.umkm.show', compact('umkm'));
+    }    
 
     /**
      * Hapus data UMKM.
