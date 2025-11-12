@@ -25,6 +25,7 @@ class DataUsaha extends Model
         'tenaga_kerja_l',
         'tenaga_kerja_p',
         'status_umkm',
+        'alasan_tolak',
     ];
 
     public function pemilik()

@@ -25,6 +25,12 @@
     </div>
 @endif
 
+@if (session('info'))
+    <div class="alert alert-info" style="background:#bfdbfe;color:#1e3a8a;padding:1rem;border-radius:8px;margin-bottom:1rem;">
+        {{ session('info') }}
+    </div>
+@endif
+
 @if ($errors->any())
     <div class="alert alert-danger" style="background:#fee2e2;color:#991b1b;padding:1rem;border-radius:8px;margin-bottom:1rem;">
         <strong>Terjadi kesalahan:</strong>
