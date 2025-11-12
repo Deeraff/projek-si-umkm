@@ -16,6 +16,7 @@ class KategoriJenisUsaha extends Model
         'deskripsi',
     ];
 
+    // relasi: satu kategori punya banyak usaha
     public function usaha()
     {
         return $this->hasMany(DataUsaha::class, 'jenis_usaha_id');

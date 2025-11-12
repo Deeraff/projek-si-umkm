@@ -491,13 +491,13 @@ select.form-input {
     transform: scaleX(1);
 }
 
-/* Image */
 .umkm-card-image {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 1 / 1; /* bikin selalu kotak */
     object-fit: cover;
     border-radius: 0.75rem;
     margin-bottom: 1rem;
+    background-color: #f3f4f6; /* fallback kalau gambar belum ada */
 }
 
 /* Title */
@@ -707,3 +707,12 @@ select.form-input {
             grid-template-columns: 1fr;
         }
     }
+
+/* Map style for UMKM detail page */
+#map {
+    width: 100%;
+    height: 350px;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
