@@ -21,8 +21,8 @@ class UmkmController extends Controller
         // 1. Ambil data pemilik (bersama relasi DataUsaha dan LegalitasUsaha)
         // Asumsi relasi di PemilikUmkm sudah didefinisikan: hasOne(DataUsaha) dan hasOne(LegalitasUsaha)
         $pemilikUmkm = PemilikUmkm::where('email', $user->email)
-                                    ->with(['dataUsaha.legalitasUsaha']) // Load Usaha dan Legalitasnya
-                                    ->first();
+                                 ->with(['dataUsaha.legalitasUsaha']) // Load Usaha dan Legalitasnya
+                                 ->first();
         
         // Siapkan variabel untuk view
         $usaha = $pemilikUmkm->dataUsaha ?? null;
@@ -31,8 +31,8 @@ class UmkmController extends Controller
     
         return view('umkm.create', [
             'pemilik' => $pemilikUmkm,
-            'usaha' => $usaha,             // Variabel baru: Data Usaha
-            'legalitas' => $legalitas,     // Variabel baru: Data Legalitas
+            'usaha' => $usaha,
+            'legalitas' => $legalitas,
             'jenisUsaha' => $jenisUsaha,
         ]);
     }
@@ -41,12 +41,12 @@ class UmkmController extends Controller
     {
         $user = Auth::user();
     
-        // Ambil data UMKM berdasarkan email user login
+        // Ambil data pemilik & usaha beserta relasi lengkap
         $pemilik = PemilikUmkm::where('email', $user->email)
             ->with(['usaha.legalitasUsaha', 'usaha.jenisUsaha'])
             ->first();
     
-        // Cek apakah user sudah punya data usaha
+        // Jika user belum memiliki data usaha → arahkan ke form pendaftaran
         if (!$pemilik || !$pemilik->usaha) {
             return redirect()->route('umkm.form')
                 ->with('error', 'Anda belum mendaftarkan data usaha. Silakan isi formulir terlebih dahulu.');
@@ -55,9 +55,23 @@ class UmkmController extends Controller
         $usaha = $pemilik->usaha;
         $legalitas = $usaha->legalitasUsaha;
     
-        return view('umkm.index', compact('pemilik', 'usaha', 'legalitas'));
-    }
+        // 🔹 Logika berdasarkan status_umkm
+        switch ($usaha->status_umkm) {
+            case 'unverified':
+                // Jika masih menunggu verifikasi
+                return view('umkm.pending', compact('pemilik', 'usaha', 'legalitas'));
     
+            case 'ditolak':
+                // Jika ditolak, tampilkan halaman khusus dengan alasan_tolak
+                // Pastikan view ini menggunakan file yang sudah diperbarui di atas
+                return view('umkm.rejected', compact('pemilik', 'usaha', 'legalitas'));
+    
+            case 'verified':
+            default:
+                // Jika sudah diverifikasi, tampilkan halaman utama UMKM
+                return view('umkm.index', compact('pemilik', 'usaha', 'legalitas'));
+        }
+    }
 
     public function showForm()
     {
@@ -79,8 +93,8 @@ class UmkmController extends Controller
             // Step 1: Pemilik (Data yang ada di form, bukan data users)
             'nama_lengkap' => 'required|string|max:150',
             'nik' => 'required|size:16',
-            'no_kk' => 'nullable|size:16', // Diperbaiki: Harusnya nullable
-            'npwp' => 'nullable|string|max:25', // Diperbaiki: Harusnya nullable
+            'no_kk' => 'nullable|size:16', 
+            'npwp' => 'nullable|string|max:25', 
             'no_hp' => 'required|string|max:20',
             'alamat_domisili' => 'required|string',
     
@@ -153,6 +167,11 @@ class UmkmController extends Controller
                     'status_tempat' => $validated['status_tempat'],
                     'tenaga_kerja_l' => $validated['tenaga_kerja_l'] ?? 0,
                     'tenaga_kerja_p' => $validated['tenaga_kerja_p'] ?? 0,
+                    
+                    // Penting: Ketika data diperbarui, status harus direset menjadi 'unverified'
+                    'status_umkm' => 'unverified', 
+                    // Alasan tolak dikosongkan jika user submit form
+                    'alasan_tolak' => null, 
                 ];
                 
                 if ($usaha) {
@@ -174,14 +193,10 @@ class UmkmController extends Controller
                         'sertifikat_merek' => $validated['sertifikat_merek'] ?? null,
                     ]
                 );
-    
-                // Jika semua berhasil, update role user jika sebelumnya adalah default (optional)
-                // $user->update(['role' => 'Pemilik UMKM']); 
-    
             });
     
             // 4. Redirect ke halaman kelola UMKM
-            return redirect()->route('kelola.umkm')->with('success', 'Data UMKM berhasil disimpan dan diperbarui!');
+            return redirect()->route('kelola.umkm')->with('success', 'Data UMKM berhasil disimpan dan diajukan ulang! Menunggu verifikasi.');
             
         } catch (\Throwable $e) {
             // Log error untuk debugging
@@ -189,11 +204,44 @@ class UmkmController extends Controller
             
             // Hapus logo yang mungkin sudah terupload jika transaksi gagal
             if ($logoPath && isset($usaha) && !$usaha) {
-                 Storage::disk('public')->delete($logoPath);
+                Storage::disk('public')->delete($logoPath);
             }
             
             return back()->withInput()->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data. Pastikan semua input benar. Pesan Error: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * Metode baru untuk mereset status UMKM menjadi 'unverified' dan mengosongkan alasan_tolak.
+     * Dipanggil saat user mengklik 'Ajukan Pendaftaran Ulang' dari halaman ditolak.
+     */
+    public function resetStatus($usaha_id)
+    {
+        $user = Auth::user();
+        
+        // 1. Cari Pemilik UMKM berdasarkan user yang login (melalui email)
+        $pemilik = PemilikUmkm::where('email', $user->email)->first();
+        
+        if (!$pemilik) {
+            return back()->with('error', 'Data pemilik UMKM tidak ditemukan.');
+        }
+        
+        // 2. Cari Data Usaha berdasarkan ID dan pastikan dimiliki oleh Pemilik ini (keamanan)
+        $usaha = DataUsaha::where('id', $usaha_id)
+                          ->where('pemilik_id', $pemilik->id)
+                          ->first();
+
+        if (!$usaha) {
+            return back()->with('error', 'Data usaha tidak valid atau tidak ditemukan.');
+        }
+
+        // 3. Update status dan alasan
+        $usaha->status_umkm = 'unverified';
+        $usaha->alasan_tolak = null;
+        $usaha->save();
+
+        // 4. Redirect ke form pendaftaran agar user bisa langsung mengedit (jika perlu)
+        return redirect()->route('umkm.form')->with('success', 'Status pendaftaran UMKM Anda berhasil diubah menjadi Menunggu Verifikasi. Silakan perbarui data Anda jika diperlukan.');
     }
 
     public function show($id)
@@ -203,5 +251,4 @@ class UmkmController extends Controller
 
         return view('umkm.show', compact('usaha'));
     }
-
 }

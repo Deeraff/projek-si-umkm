@@ -71,6 +71,14 @@
                     <span>Pemilik UMKM</span>
                 </a>
             </li>
+
+            {{-- Data Penduduk --}}
+            <li class="sidebar-menu-item @yield('penduduk_active')">
+                <a href="{{ route('admin.penduduk.index') }}">
+                    <i class="fas fa-users"></i>
+                    <span>Data Penduduk</span>
+                </a>
+            </li>
         </ul>
 
         <div class="sidebar-logout">
