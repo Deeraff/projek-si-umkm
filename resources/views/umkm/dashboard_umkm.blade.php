@@ -41,7 +41,12 @@
               No. Telepon:
               <span style="font-weight:400;">{{ $umkm->no_telp_usaha ?? '-' }}</span>
             </p>
-            <a href="#" class="btn-secondary" style="margin-top:.5rem; display:inline-block;">Lihat Profil Lengkap</a>
+            
+            {{-- BAGIAN PENTING: Link ini mengarah ke detail profil --}}
+            <a href="{{ route('umkm.profil.detail', ['id' => $umkm->id]) }}" class="btn-secondary" style="margin-top:.5rem; display:inline-block;">
+                Lihat Profil Lengkap
+            </a>
+
           </div>
         </div>
       </section>
@@ -53,13 +58,13 @@
           <div class="statistik-card">
             <div style="font-size:.9rem; opacity:.9;">Jumlah Produk</div>
             <div id="stat-jumlah-produk" class="statistik-value">
-              {{ $products->count() ?? 0 }}
+              {{ isset($products) ? $products->count() : 0 }}
             </div>
           </div>
           <div class="statistik-card" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
             <div style="font-size:.9rem; opacity:.9;">Produk Aktif</div>
             <div id="stat-produk-aktif" class="statistik-value">
-              {{ $products->where('aktif', true)->count() ?? 0 }}
+              {{ isset($products) ? $products->where('aktif', true)->count() : 0 }}
             </div>
           </div>
         </div>
@@ -86,36 +91,42 @@
           <input id="search" class="form-input" placeholder="Cari produk..." style="flex:1;" />
           <select id="filter-kategori" class="form-input" style="width:160px;">
             <option value="">Semua Kategori</option>
-            @foreach($products->pluck('kategori')->unique() as $kategori)
-              <option value="{{ $kategori }}">{{ $kategori }}</option>
-            @endforeach
+            @if(isset($products))
+                @foreach($products->pluck('kategori')->unique() as $kategori)
+                <option value="{{ $kategori }}">{{ $kategori }}</option>
+                @endforeach
+            @endif
           </select>
         </div>
 
         {{-- Grid Produk --}}
         <div id="produk-list" class="umkm-grid">
-          @forelse($products as $p)
-            <div class="umkm-card">
-              <img class="umkm-card-image"
-                   src="{{ $p->gambar ? asset('storage/' . $p->gambar) : asset('images/default-product.png') }}"
-                   alt="{{ $p->nama }}">
-              <div class="umkm-card-title">{{ $p->nama }}</div>
-              <div class="umkm-card-info">
-                <span class="umkm-card-info-text">
-                  Harga: Rp {{ number_format($p->harga, 0, ',', '.') }} &nbsp; • &nbsp; Stok: {{ $p->stok }}
-                </span>
-              </div>
-              <div class="umkm-card-info">
-                <span class="umkm-card-info-text">Kategori: {{ $p->kategori ?? '-' }}</span>
-              </div>
-              <div class="umkm-card-status">
-                {{ $p->aktif && $p->stok > 0 ? 'Tersedia' : ($p->stok == 0 ? 'Habis' : 'Non-aktif') }}
-              </div>
-              <a href="#" class="umkm-card-link">Lihat detail →</a>
-            </div>
-          @empty
-            <div class="empty-message">Belum ada produk terdaftar.</div>
-          @endforelse
+          @if(isset($products))
+              @forelse($products as $p)
+                <div class="umkm-card">
+                  <img class="umkm-card-image"
+                      src="{{ $p->gambar ? asset('storage/' . $p->gambar) : asset('images/default-product.png') }}"
+                      alt="{{ $p->nama }}">
+                  <div class="umkm-card-title">{{ $p->nama }}</div>
+                  <div class="umkm-card-info">
+                    <span class="umkm-card-info-text">
+                      Harga: Rp {{ number_format($p->harga, 0, ',', '.') }} &nbsp; • &nbsp; Stok: {{ $p->stok }}
+                    </span>
+                  </div>
+                  <div class="umkm-card-info">
+                    <span class="umkm-card-info-text">Kategori: {{ $p->kategori ?? '-' }}</span>
+                  </div>
+                  <div class="umkm-card-status">
+                    {{ $p->aktif && $p->stok > 0 ? 'Tersedia' : ($p->stok == 0 ? 'Habis' : 'Non-aktif') }}
+                  </div>
+                  <a href="#" class="umkm-card-link">Lihat detail →</a>
+                </div>
+              @empty
+                <div class="empty-message">Belum ada produk terdaftar.</div>
+              @endforelse
+          @else
+             <div class="empty-message">Data produk belum tersedia.</div>
+          @endif
         </div>
 
         <div class="see-more-container">

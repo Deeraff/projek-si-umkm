@@ -108,9 +108,10 @@
             </div>
         </div>
 
-        {{-- Tombol Edit --}}
+        {{-- Tombol Edit (SUDAH DIPERBAIKI) --}}
         <div class="text-center mt-8">
-            <a href="#" class="btn-secondary inline-flex items-center gap-2">
+            {{-- Mengarah ke route umkm.edit --}}
+            <a href="{{ route('umkm.edit') }}" class="btn-secondary inline-flex items-center gap-2">
                 <i class="fa-solid fa-pen-to-square"></i> Edit Data UMKM
             </a>
         </div>
