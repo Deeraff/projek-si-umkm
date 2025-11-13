@@ -716,3 +716,23 @@ select.form-input {
     margin-top: 1.5rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
+
+.umkm-statistik {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.statistik-card {
+    display: inline-block;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.statistik-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0.5rem 0 0;
+}

@@ -30,28 +30,46 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
-    
+
         // Coba autentikasi
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-    
-            // 🎯 LOGIKA CEK ROLE
+
             $user = Auth::user();
-    
+
+            // 🎯 ADMIN
             if ($user->role === 'admin') {
-                // Arahkan admin ke dashboard admin
-                return redirect()->intended(route('admin.dashboard')); 
+                return redirect()->route('admin.dashboard');
             }
-    
-            // Arahkan non-admin ke landing page default
-            return redirect()->intended(route('landing.index'));
+
+            // 🎯 PEMILIK UMKM
+            if ($user->role === 'Pemilik UMKM') {
+                $pemilik = \App\Models\PemilikUmkm::where('email', $user->email)->first();
+
+                if ($pemilik) {
+                    $usaha = \App\Models\DataUsaha::where('pemilik_id', $pemilik->id)->first();
+
+                    if ($usaha) {
+                        // ✅ Langsung arahkan ke dashboard UMKM
+                        return redirect()->route('dashboard.umkm', $usaha->id);
+                    }
+                }
+
+                // Kalau belum punya usaha
+                return redirect()->route('umkm.form')
+                    ->with('info', 'Lengkapi data usaha Anda terlebih dahulu.');
+            }
+
+            // 🎯 USER BIASA
+            return redirect()->route('landing.index');
         }
-    
-        // Jika gagal login
+
         throw ValidationException::withMessages([
             'email' => 'Email atau password salah.',
         ]);
     }
+
+
 
     /**
      * Tampilkan halaman register.

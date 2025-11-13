@@ -69,40 +69,35 @@
 @endsection
 
 @section('scripts')
-    <script>
-        // Pastikan variabel Blade menggunakan $data_usaha
-        var umkmData = @json($data_usaha ?? []);
+<script>
+    // Hanya data UMKM dengan status 'verified' yang dikirim dari controller
+    var umkmData = @json($data_usaha ?? []);
 
-        // ... inisialisasi map ...
-        var defaultLat = -7.810969841181508;
-        var defaultLng = 111.9921971809567;
-        // PENTING: Menggunakan 'latitude' dan 'longitude'
-        var initialLat = umkmData.length > 0 ? umkmData[0].latitude : defaultLat;
-        var initialLng = umkmData.length > 0 ? umkmData[0].longitude : defaultLng;
+    var defaultLat = -7.810969841181508;
+    var defaultLng = 111.9921971809567;
+    var initialLat = umkmData.length > 0 ? umkmData[0].latitude : defaultLat;
+    var initialLng = umkmData.length > 0 ? umkmData[0].longitude : defaultLng;
 
-        var map = L.map('map').setView([initialLat, initialLng], 14);
+    var map = L.map('map').setView([initialLat, initialLng], 13);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-        // 2. Loop data dan tambahkan marker
-        let markersCount = 0;
-        umkmData.forEach(function(usaha) {
-            // PENTING: Menggunakan 'latitude' dan 'longitude'
-            if (usaha.latitude && usaha.longitude) {
-                var lat = parseFloat(usaha.latitude);
-                var lng = parseFloat(usaha.longitude);
+    umkmData.forEach(function(usaha) {
+        if (usaha.latitude && usaha.longitude) {
+            var lat = parseFloat(usaha.latitude);
+            var lng = parseFloat(usaha.longitude);
 
-                // Menggunakan 'nama_usaha' dan 'alamat_usaha'
-                var popupContent = `
+            var popupContent = `
                 <b>${usaha.nama_usaha}</b><br>
-                ${usaha.alamat_usaha ? usaha.alamat_usaha : 'Alamat tidak tersedia'}
+                ${usaha.alamat_usaha || 'Alamat tidak tersedia'}
             `;
 
-                L.marker([lat, lng]).addTo(map)
-                    .bindPopup(popupContent);
-            }
-        });
-    </script>
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup(popupContent);
+        }
+    });
+</script>
 @endsection
+

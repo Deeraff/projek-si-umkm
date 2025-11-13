@@ -16,25 +16,27 @@ class DashboardController extends Controller
     {
         // 🚨 LOGIKA OTORISASI: Pastikan user yang login adalah 'admin'
         if (Auth::check() && Auth::user()->role !== 'admin') {
-            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman admin.'); 
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
         }
-        
+    
         // 1. Hitung total pemilik UMKM
         $totalPemilik = PemilikUmkm::count();
-        
-        // 2. Hitung UMKM Pendaftar (DataUsaha dengan status 'unverified')
+    
+        // 2. Hitung UMKM Pendaftar (status = unverified)
         $umkmPendaftar = DataUsaha::where('status_umkm', 'unverified')->count();
-
-        // 3. Hitung UMKM Aktif
+    
+        // 3. Hitung UMKM Aktif (status = verified)
         $umkmAktif = DataUsaha::where('status_umkm', 'verified')->count();
-        
-        // Ambil data UMKM untuk peta (hanya yang sudah terverifikasi atau punya koordinat)
+    
+        // 4. Ambil data UMKM untuk peta (hanya yang sudah terverifikasi dan punya koordinat)
         $data_usaha = DataUsaha::select('nama_usaha', 'alamat_usaha', 'latitude', 'longitude')
+            ->where('status_umkm', 'verified') // ✅ hanya tampilkan UMKM terverifikasi
             ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
             ->get();
-
+    
         return view('admin.dashboard', compact('totalPemilik', 'umkmPendaftar', 'umkmAktif', 'data_usaha'));
-    }
+    }    
 
     /**
      * Tampilkan daftar UMKM yang berstatus 'unverified' (Pendaftar).
@@ -74,17 +76,27 @@ class DashboardController extends Controller
     /**
      * Lakukan verifikasi UMKM, mengubah status_umkm menjadi 'verified'.
      */
-    public function verify(DataUsaha $umkm)
+    public function verify($id)
     {
         // Pengecekan Otorisasi Admin
         if (Auth::check() && Auth::user()->role !== 'admin') {
             return redirect('/')->with('error', 'Akses Ditolak.');
         }
 
-        $umkm->status_umkm = 'verified';
-        $umkm->save();
-
-        return redirect()->route('admin.umkm.pendaftar.index')->with('success', 'UMKM ' . $umkm->nama_usaha . ' berhasil diverifikasi.');
+        $pendaftar = DataUsaha::findOrFail($id);
+        $pendaftar->update(['status_umkm' => 'verified']);
+    
+        // Pindahkan ke tabel data_usaha jika belum ada
+        DataUsaha::firstOrCreate(
+            ['pemilik_id' => $pendaftar->pemilik_id],
+            [
+                'nama_usaha' => $pendaftar->nama_usaha,
+                'deskripsi' => $pendaftar->deskripsi,
+                'status_umkm' => 'aktif'
+            ]
+        );
+    
+        return redirect()->back()->with('success', 'UMKM berhasil diverifikasi!');
     }
 
     /**
@@ -105,16 +117,23 @@ class DashboardController extends Controller
     /**
      * Hapus data UMKM.
      */
-    public function destroy(DataUsaha $umkm)
+    public function reject(Request $request, $id)
     {
         // Pengecekan Otorisasi Admin
         if (Auth::check() && Auth::user()->role !== 'admin') {
             return redirect('/')->with('error', 'Akses Ditolak.');
         }
         
-        $nama = $umkm->nama_usaha;
-        $umkm->delete();
-
-        return redirect()->route('admin.umkm.pendaftar.index')->with('success', 'UMKM ' . $nama . ' berhasil dihapus.');
+        $request->validate([
+            'alasan_tolak' => 'required|string|max:255',
+        ]);
+    
+        $pendaftar = DataUsaha::findOrFail($id);
+        $pendaftar->update([
+            'status_umkm' => 'ditolak',
+            'alasan_tolak' => $request->alasan_tolak
+        ]);
+    
+        return redirect()->back()->with('error', 'UMKM ditolak dengan alasan: ' . $request->alasan_tolak);
     }
 }
