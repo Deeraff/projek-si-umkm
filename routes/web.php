@@ -6,6 +6,7 @@ use App\Http\Controllers\UmkmController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InformasiController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ContactController; // WAJIB ADA
 use App\Http\Controllers\KategoriJenisUsahaController;
 use App\Http\Controllers\PemilikUmkmController;
@@ -51,6 +52,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/daftar-umkm', [UmkmController::class, 'store'])->name('umkm.store');
     Route::get('/umkm', [UmkmController::class, 'index'])->name('kelola.umkm');
     Route::post('/umkm/reset-status/{usaha_id}', [UmkmController::class, 'resetStatus'])->name('umkm.reset_status');
+    Route::get('/umkm/produk/tambah', [ProdukController::class, 'create'])->name('produk.create');
+    Route::post('/umkm/produk/store', [ProdukController::class, 'store'])->name('produk.store');
+    Route::get('/list', [ProdukController::class, 'list'])->name('produk.list');
+    Route::get('/umkm/produk/{id}', [ProdukController::class, 'show'])->name('produk.show');
+    Route::get('/produk/{id}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
+    Route::put('/produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
+    Route::delete('/produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+
+
 });
 
 
@@ -131,3 +141,4 @@ use App\Http\Controllers\DashboardUmkmController;
 Route::get('/umkm/dashboard/{id}', [DashboardUmkmController::class, 'index'])
     ->name('umkm.dashboard');
 
+    

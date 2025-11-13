@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PemilikUmkm;
 use App\Models\DataUsaha;
+use App\Models\DataProduk;
+use App\Models\KategoriProduk;
 use App\Models\LegalitasUsaha;
 use App\Models\KategoriJenisUsaha;
 use Illuminate\Support\Facades\DB;
@@ -157,7 +159,7 @@ class UmkmController extends Controller
                 // Data umum untuk usaha
                 $usahaData = [
                     'nama_usaha' => $validated['nama_usaha'],
-                    'logo' => $logoPath ?? $usaha->logo ?? null, // Pertahankan logo lama jika tidak ada yang baru
+                    'logo' => $logoPath ?? $usaha->logo ?? null,
                     'jenis_usaha_id' => $validated['jenis_usaha_id'],
                     'bentuk_usaha' => $validated['bentuk_usaha'],
                     'alamat_usaha' => $validated['alamat_usaha'],
@@ -251,4 +253,5 @@ class UmkmController extends Controller
 
         return view('umkm.show', compact('usaha'));
     }
+
 }

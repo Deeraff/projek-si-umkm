@@ -9,6 +9,11 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    public function pemilikUmkm()
+    {
+        return $this->hasOne(PemilikUmkm::class, 'email', 'email');
+    }
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -46,4 +51,5 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
 }
