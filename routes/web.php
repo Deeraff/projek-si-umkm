@@ -11,6 +11,7 @@ use App\Http\Controllers\ContactController; // WAJIB ADA
 use App\Http\Controllers\KategoriJenisUsahaController;
 use App\Http\Controllers\PemilikUmkmController;
 use App\Http\Controllers\PendudukController;
+use App\Http\Controllers\DashboardUmkmController; // (Di-import dari bawah)
 
 /*
 |--------------------------------------------------------------------------
@@ -43,14 +44,43 @@ Route::prefix('landing-page')->name('landing.')->group(function () {
     })->name('kontak');
 });
 
+// =========================================================================
+// == PERBAIKAN: SEMUA RUTE UMKM SPESIFIK DIPINDAH KE SINI (DI ATAS {id}) ==
+// =========================================================================
+
+// Route Dashboard Utama (dari baris 142)
+Route::get('/umkm/dashboard', [UmkmController::class, 'index'])->name('kelola.umkm');
+
+// Route Dashboard per ID (dari baris 139)
+Route::get('/umkm/dashboard/{id}', [DashboardUmkmController::class, 'index'])
+    ->name('umkm.dashboard');
+
+// Route Detail Profil (dari baris 145)
+Route::get('/umkm/profil/{id}', [UmkmController::class, 'showDetailProfil'])->name('umkm.profil.detail');
+
+// Route Update Logo (dari baris 148)
+Route::put('/umkm/update-logo/{id}', [UmkmController::class, 'updateLogo'])->name('umkm.update.logo');
+
+// Route Edit (dari baris 151) - INI YANG BIKIN ERROR
+Route::get('/umkm/edit', [UmkmController::class, 'edit'])->name('umkm.edit');
+Route::put('/umkm/update', [UmkmController::class, 'update'])->name('umkm.update');
+
+// =========================================================================
+// == RUTE "RAKUS" {id} INI HARUS DI BAWAH RUTE SPESIFIK LAINNYA ==
+// =========================================================================
 // 🏪 Detail UMKM
 Route::get('/umkm/{id}', [UmkmController::class, 'show'])->name('umkm.show');
+
 
 // 📝 Form pendaftaran UMKM
 Route::middleware(['auth'])->group(function () {
     Route::get('/daftar-umkm', [UmkmController::class, 'showForm'])->name('umkm.form');
     Route::post('/daftar-umkm', [UmkmController::class, 'store'])->name('umkm.store');
-    Route::get('/umkm', [UmkmController::class, 'index'])->name('kelola.umkm');
+    
+    // (Route /umkm sekarang jadi /umkm/dashboard, kita biarkan /umkm untuk index admin/public)
+    // Saya ganti ini agar tidak bentrok dengan /umkm/{id}. Nama 'kelola.umkm' sudah dipakai di atas.
+    Route::get('/kelola-umkm-saya', [UmkmController::class, 'index'])->name('kelola.umkm.saya'); 
+    
     Route::post('/umkm/reset-status/{usaha_id}', [UmkmController::class, 'resetStatus'])->name('umkm.reset_status');
     Route::get('/umkm/produk/tambah', [ProdukController::class, 'create'])->name('produk.create');
     Route::post('/umkm/produk/store', [ProdukController::class, 'store'])->name('produk.store');
@@ -104,7 +134,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/umkm/umkm-pendaftar', [DashboardController::class, 'umkmPendaftarIndex'])->name('umkm.pendaftar.index');
         Route::patch('/umkm/{umkm}/verify', [DashboardController::class, 'verify'])->name('umkm.verify');
-        Route::get('/umkm/{umkm}/show', [DashboardController::class, 'show'])->name('umkm.show');
+        // Baris ini bentrok dengan rute publik /umkm/{id}, tapi karena ada prefix 'admin',
+        // alamatnya jadi '/admin/umkm/{umkm}/show', jadi ini aman.
+        Route::get('/umkm/{umkm}/show', [DashboardController::class, 'show'])->name('umkm.show'); 
         Route::patch('/umkm/{id}/tolak', [DashboardController::class, 'reject'])->name('umkm.reject');
         Route::resource('kategori', KategoriJenisUsahaController::class)->names([
             'index'   => 'kategori.index',

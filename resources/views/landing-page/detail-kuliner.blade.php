@@ -17,7 +17,7 @@
     </div>
 
     <h2 class="text-3xl font-bold text-green-700 mb-4 text-center">
-        UMKM Kuliner Unggulan di Sukorame
+        UMKM Kuliner di Sukorame
     </h2>
     <p class="text-gray-700 mb-8 text-center">
         Temukan berbagai produk kuliner lezat hasil karya warga Kelurahan Sukorame.
@@ -43,26 +43,66 @@
         </form>
     </div>
 
-    {{-- Grid UMKM --}}
-    <div class="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8">
-        @forelse ($umkmList as $umkm)
-            <div class="bg-gray-50 rounded-lg shadow overflow-hidden transform hover:scale-105 hover:shadow-xl transition-all duration-300">
-                {{-- ambil gambar dari kolom logo --}}
-                <img 
-                    src="{{ $umkm->logo ? asset('storage/' . $umkm->logo) : asset('images/default.jpg') }}" 
-                    alt="{{ $umkm->nama_usaha }}" 
-                    class="w-full h-48 object-cover"
-                >
-                <div class="p-5">
-                    <h3 class="text-lg font-bold text-gray-800 mb-2">{{ $umkm->nama_usaha }}</h3>
-                    <p class="text-gray-600 text-sm line-clamp-2">
-                        {{ $umkm->alamat_usaha ?? 'Alamat belum tersedia' }}
-                    </p>
+    {{-- Carousel UMKM --}}
+    <div class="relative">
+        {{-- Tombol kiri --}}
+        <button id="scrollLeft" 
+            class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-green-600 text-white p-3 rounded-full shadow-md hover:bg-green-700 z-10">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        {{-- Container scroll --}}
+        <div id="umkmCarousel" class="flex overflow-x-auto gap-6 scroll-smooth px-12 py-4 hide-scrollbar">
+            @forelse ($umkmList as $umkm)
+                <div class="min-w-[260px] bg-gray-50 rounded-xl shadow-md overflow-hidden flex-shrink-0 hover:shadow-lg hover:scale-105 transition-all duration-300">
+                    <img 
+                        src="{{ $umkm->logo ? asset('storage/' . $umkm->logo) : asset('images/default.jpg') }}" 
+                        alt="{{ $umkm->nama_usaha }}" 
+                        class="w-full h-48 object-cover"
+                    >
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-green-700">{{ $umkm->nama_usaha }}</h3>
+                        <p class="text-sm text-gray-600 mb-2">
+                            <i class="fa-solid fa-location-dot text-green-500 mr-1"></i> 
+                            {{ $umkm->alamat_usaha ?? 'Alamat belum tersedia' }}
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <i class="fa-solid fa-phone text-green-500 mr-1"></i> 
+                            {{ $umkm->no_telp_usaha ?? '-' }}
+                        </p>
+                    </div>
                 </div>
-            </div>
-        @empty
-            <p class="text-center text-gray-600 col-span-3">Belum ada data UMKM Kuliner.</p>
-        @endforelse
+            @empty
+                <p class="text-center text-gray-600 w-full">Belum ada data UMKM Kuliner.</p>
+            @endforelse
+        </div>
+
+        {{-- Tombol kanan --}}
+        <button id="scrollRight" 
+            class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-green-600 text-white p-3 rounded-full shadow-md hover:bg-green-700 z-10">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
     </div>
+
+    {{-- CSS sembunyikan scrollbar --}}
+    <style>
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    </style>
+
+    {{-- Script geser kiri-kanan --}}
+    <script>
+    document.getElementById('scrollLeft').addEventListener('click', () => {
+        document.getElementById('umkmCarousel').scrollBy({ left: -300, behavior: 'smooth' });
+    });
+    document.getElementById('scrollRight').addEventListener('click', () => {
+        document.getElementById('umkmCarousel').scrollBy({ left: 300, behavior: 'smooth' });
+    });
+    </script>
 </div>
 @endsection

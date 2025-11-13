@@ -4,28 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\KategoriJenisUsaha;
+use App\Models\DataUsaha;
 
 class InformasiController extends Controller
 {
     public function showKuliner(Request $request)
     {
-        // cari kategori "makanan & minuman" dari tabel kategori_jenis_usaha
+        // cari kategori berdasarkan kolom nama_jenis
         $kategori = KategoriJenisUsaha::where('nama_jenis', 'makanan & minuman')->first();
 
-        $umkmList = collect(); // default kosong jika kategori tidak ditemukan
-
         if ($kategori) {
-            $query = $kategori->usaha();
+            // ambil semua usaha dengan jenis tersebut
+            $query = DataUsaha::where('jenis_usaha_id', $kategori->id);
 
-            // jika user melakukan pencarian
-            if ($request->has('search') && $request->search != '') {
-                $query->where('nama_usaha', 'like', '%' . $request->search . '%');
+            // jika ada pencarian
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where('nama_usaha', 'like', "%{$search}%");
             }
 
             $umkmList = $query->get();
+        } else {
+            $umkmList = collect(); // kosong jika tidak ada kategori
         }
 
-        // kirim data kategori dan daftar umkm ke view
         return view('landing-page.detail-kuliner', compact('kategori', 'umkmList'));
     }
 

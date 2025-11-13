@@ -69,11 +69,12 @@
                 {{ $umkm->no_telp_usaha ?? '-' }}
               </span>
             </p>
-
-            {{-- LINK PROFIL --}}
-            <a href="#" class="btn-secondary" style="margin-top:.5rem; display:inline-block;">
-              Lihat Profil Lengkap
+            
+            {{-- BAGIAN PENTING: Link ini mengarah ke detail profil --}}
+            <a href="{{ route('umkm.profil.detail', ['id' => $umkm->id]) }}" class="btn-secondary" style="margin-top:.5rem; display:inline-block;">
+                Lihat Profil Lengkap
             </a>
+
           </div>
         </div>
       </section>
@@ -85,7 +86,13 @@
           <div class="statistik-card">
             <div style="font-size:.9rem; opacity:.9;">Jumlah Produk</div>
             <div id="stat-jumlah-produk" class="statistik-value">
-              {{ $products->count() ?? 0 }}
+              {{ isset($products) ? $products->count() : 0 }}
+            </div>
+          </div>
+          <div class="statistik-card" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
+            <div style="font-size:.9rem; opacity:.9;">Produk Aktif</div>
+            <div id="stat-produk-aktif" class="statistik-value">
+              {{ $products->where('aktif', true)->count() ?? 0 }}
             </div>
           </div>
         </div>
