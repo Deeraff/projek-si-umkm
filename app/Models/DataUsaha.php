@@ -33,6 +33,7 @@ class DataUsaha extends Model
         return $this->belongsTo(PemilikUmkm::class, 'pemilik_id');
     }
 
+    // pastikan ini merujuk ke model KategoriJenisUsaha
     public function jenisUsaha()
     {
         return $this->belongsTo(KategoriJenisUsaha::class, 'jenis_usaha_id');

@@ -125,3 +125,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 Route::get('/informasi/kuliner', [InformasiController::class, 'showKuliner'])->name('informasi.kuliner');
 Route::get('/informasi/kerajinan', [InformasiController::class, 'showKerajinan'])->name('informasi.kerajinan');
 Route::get('/informasi/pelatihan', [InformasiController::class, 'showPelatihan'])->name('informasi.pelatihan');
+
+use App\Http\Controllers\DashboardUmkmController;
+
+Route::get('/umkm/dashboard/{id}', [DashboardUmkmController::class, 'index'])
+    ->name('umkm.dashboard');
+

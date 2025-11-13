@@ -23,7 +23,11 @@
     {{-- PERUBAHAN 1: Tambahkan kelas ini agar header menempel di atas --}}
     <header class="bg-white shadow fixed top-0 w-full z-50">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-green-700">APP UMKM</h1>
+            <a href="{{ route('landing.index') }}">
+                <img src="{{ asset('storage/logo.svg') }}" alt="Logo UMKM" class="h-10 w-auto">
+            </a>
+
+
 
             {{-- Navigasi Utama --}}
             <nav class="space-x-6 hidden md:flex">

@@ -20,7 +20,7 @@
 
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="{{ asset('storage/liz.jpg') }}" alt="Banner 1" class="d-block w-100"> 
+                <img src="{{ asset('storage/banner1.png') }}" alt="Banner 1" class="d-block w-100"> 
                 <div class="carousel-overlay"></div>
             </div>
         </div>
@@ -41,7 +41,8 @@
         {{-- Button Daftarkan/Lihat UMKM --}}
         @auth
             @if($hasUmkm)
-                <a href="{{ route('kelola.umkm') }}" class="action-button action-button-green">
+                <a href="{{ route('umkm.dashboard', $umkmId) }}" class="action-button action-button-green">
+
                     <div class="button-content">
                         <span class="button-text">LIHAT UMKM</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="button-icon" viewBox="0 0 16 16">
