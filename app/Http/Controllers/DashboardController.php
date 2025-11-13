@@ -84,7 +84,7 @@ class DashboardController extends Controller
         }
 
         $pendaftar = DataUsaha::findOrFail($id);
-        $pendaftar->update(['status' => 'diterima']);
+        $pendaftar->update(['status_umkm' => 'verified']);
     
         // Pindahkan ke tabel data_usaha jika belum ada
         DataUsaha::firstOrCreate(
@@ -130,7 +130,7 @@ class DashboardController extends Controller
     
         $pendaftar = DataUsaha::findOrFail($id);
         $pendaftar->update([
-            'status' => 'ditolak',
+            'status_umkm' => 'ditolak',
             'alasan_tolak' => $request->alasan_tolak
         ]);
     
