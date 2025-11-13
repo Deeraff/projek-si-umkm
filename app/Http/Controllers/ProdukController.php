@@ -22,7 +22,7 @@ class ProdukController extends Controller
 
         $kategori_produk = KategoriProduk::all();
 
-        return view('umkm.tambah-produk', [
+        return view('umkm.daftar-produk', [
             'usaha' => $pemilik->usaha,
             'kategori_produk' => $kategori_produk,
         ]);
@@ -125,4 +125,29 @@ class ProdukController extends Controller
         return redirect()->route('produk.show', $produk->id)
             ->with('success', 'Produk berhasil diperbarui!');
     }
+    // 🗑️ Hapus produk
+    public function destroy($id)
+    {
+        $user = Auth::user();
+        $pemilik = PemilikUmkm::where('email', $user->email)->with('usaha')->first();
+
+        if (!$pemilik || !$pemilik->usaha) {
+            return redirect()->route('umkm.form')->with('error', 'Anda belum memiliki data usaha.');
+        }
+
+        $produk = DataProduk::where('id', $id)
+            ->where('usaha_id', $pemilik->usaha->id)
+            ->firstOrFail();
+
+        // Hapus foto jika ada
+        if ($produk->foto_produk && \Storage::disk('public')->exists($produk->foto_produk)) {
+            \Storage::disk('public')->delete($produk->foto_produk);
+        }
+
+        $produk->delete();
+
+        return redirect()->route('umkm.dashboard', $pemilik->usaha->id)
+            ->with('success', 'Produk berhasil dihapus.');
+    }
+
 }

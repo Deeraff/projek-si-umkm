@@ -92,8 +92,9 @@
           <div class="statistik-card" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);">
             <div style="font-size:.9rem; opacity:.9;">Produk Aktif</div>
             <div id="stat-produk-aktif" class="statistik-value">
-              {{ $products->where('aktif', true)->count() ?? 0 }}
+              {{ $products->where('status_produk', 'aktif')->count() ?? 0 }}
             </div>
+
           </div>
         </div>
       </section>

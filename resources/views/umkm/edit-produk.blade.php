@@ -1,102 +1,90 @@
-@extends('layouts.app')
+@extends('layouts.umkm')
 
 @section('title', 'Edit Produk')
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/landing.css') }}">
-@endpush
-
 @section('content')
 <div class="landing-container py-10">
-  <div class="content-card" style="max-width:850px; margin:auto; padding:2rem 2.5rem;">
+    <div class="content-card max-w-4xl mx-auto">
+        <h2 class="section-title-gradient text-center mb-6">Edit Data Produk</h2>
 
-    {{-- 🔙 Tombol Kembali --}}
-    <a href="{{ route('produk.show', $produk->id) }}" 
-       class="btn-secondary"
-       style="margin-bottom:1.5rem; display:inline-flex; align-items:center; gap:.4rem; font-weight:500;">
-       ← Kembali ke Detail Produk
-    </a>
+        <form action="{{ route('produk.update', $produk->id) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
 
-    <h1 style="font-size:1.75rem; color:#111827; font-weight:700; margin-bottom:1.5rem;">
-      ✏️ Edit Produk
-    </h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {{-- NAMA PRODUK --}}
+                <div class="form-group md:col-span-2">
+                    <label class="block text-gray-700 font-bold mb-2">Nama Produk</label>
+                    <input type="text" name="nama_produk" class="form-input w-full border rounded px-3 py-2" 
+                           value="{{ old('nama_produk', $produk->nama_produk) }}" required>
+                </div>
 
-    {{-- ⚙️ Form Edit Produk --}}
-    <form action="{{ route('produk.update', $produk->id) }}" method="POST" enctype="multipart/form-data" style="display:grid; gap:1.25rem;">
-      @csrf
-      @method('PUT')
+                {{-- KATEGORI --}}
+                <div class="form-group">
+                    <label class="block text-gray-700 font-bold mb-2">Kategori Produk</label>
+                    <select name="kategori_id" class="form-input w-full border rounded px-3 py-2" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        @foreach($kategoriList as $kategori)
+                            <option value="{{ $kategori->id }}" {{ $produk->kategori_id == $kategori->id ? 'selected' : '' }}>
+                                {{ $kategori->nama_kategori }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-      {{-- Nama Produk --}}
-      <div>
-        <label class="form-label">Nama Produk</label>
-        <input type="text" name="nama_produk" class="form-input" 
-               value="{{ old('nama_produk', $produk->nama_produk) }}" required>
-      </div>
+                {{-- STATUS PRODUK --}}
+                <div class="form-group">
+                    <label class="block text-gray-700 font-bold mb-2">Status Produk</label>
+                    <select name="status_produk" class="form-input w-full border rounded px-3 py-2" required>
+                        <option value="aktif" {{ $produk->status_produk === 'aktif' ? 'selected' : '' }}>Aktif (Tersedia)</option>
+                        <option value="nonaktif" {{ $produk->status_produk === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
+                </div>
 
-      {{-- Harga --}}
-      <div>
-        <label class="form-label">Harga (Rp)</label>
-        <input type="number" name="harga" class="form-input"
-               value="{{ old('harga', $produk->harga) }}" required>
-      </div>
+                {{-- HARGA --}}
+                <div class="form-group">
+                    <label class="block text-gray-700 font-bold mb-2">Harga (Rp)</label>
+                    <input type="number" name="harga" class="form-input w-full border rounded px-3 py-2"
+                           value="{{ old('harga', $produk->harga) }}" required>
+                </div>
 
-      {{-- Kategori --}}
-      <div>
-        <label class="form-label">Kategori</label>
-        <select name="kategori_id" class="form-input" required>
-          <option value="">-- Pilih Kategori --</option>
-          @foreach($kategoriList as $kategori)
-            <option value="{{ $kategori->id }}" 
-                    {{ $produk->kategori_id == $kategori->id ? 'selected' : '' }}>
-              {{ $kategori->nama_kategori }}
-            </option>
-          @endforeach
-        </select>
-      </div>
+                {{-- DESKRIPSI --}}
+                <div class="form-group md:col-span-2">
+                    <label class="block text-gray-700 font-bold mb-2">Deskripsi Produk</label>
+                    <textarea name="deskripsi" class="form-input w-full border rounded px-3 py-2" rows="4">{{ old('deskripsi', $produk->deskripsi) }}</textarea>
+                </div>
 
-      {{-- Status --}}
-      <div>
-        <label class="form-label">Status Produk</label>
-        <select name="status_produk" class="form-input" required>
-          <option value="aktif" {{ $produk->status_produk === 'aktif' ? 'selected' : '' }}>Aktif (Tersedia)</option>
-          <option value="nonaktif" {{ $produk->status_produk === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-        </select>
-      </div>
+                {{-- FOTO PRODUK --}}
+                <div class="form-group md:col-span-2">
+                    <label class="block text-gray-700 font-bold mb-2">Foto Produk</label>
+                    @if($produk->foto_produk)
+                        <div class="mb-3">
+                            <p class="text-sm text-gray-500">Foto saat ini:</p>
+                            <img src="{{ asset('storage/' . $produk->foto_produk) }}" 
+                                 alt="Foto Produk" 
+                                 class="w-24 h-24 object-cover rounded border">
+                        </div>
+                    @endif
+                    <input type="file" name="foto_produk" class="form-input w-full border rounded px-3 py-2">
+                    <p class="text-xs text-gray-500 mt-1">Biarkan kosong jika tidak ingin mengganti foto.</p>
+                </div>
 
-      {{-- Deskripsi --}}
-      <div>
-        <label class="form-label">Deskripsi Produk</label>
-        <textarea name="deskripsi" class="form-input" rows="5">{{ old('deskripsi', $produk->deskripsi) }}</textarea>
-      </div>
+            </div>
 
-      {{-- Foto Produk --}}
-      <div>
-        <label class="form-label">Foto Produk</label>
-        <input type="file" name="foto_produk" class="form-input">
+            {{-- TOMBOL AKSI --}}
+            <div class="flex justify-center gap-4 mt-8">
+                <a href="{{ route('produk.show', $produk->id) }}" 
+                   class="btn-secondary bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">
+                    Batal
+                </a>
+                <button type="submit" 
+                        class="btn-primary bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                    Simpan Perubahan
+                </button>
+            </div>
 
-        @if($produk->foto_produk)
-          <div style="margin-top:.5rem;">
-            <img src="{{ asset('storage/' . $produk->foto_produk) }}" 
-                 alt="Foto Produk" 
-                 style="width:120px; height:120px; object-fit:cover; border-radius:10px; border:2px solid #e5e7eb;">
-          </div>
-        @endif
-      </div>
-
-      {{-- Tombol Simpan --}}
-      <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top:1.5rem;">
-        <button type="submit" 
-                class="btn-primary"
-                style="padding:.6rem 1.4rem; border-radius:8px; background:#2563eb; color:white; font-weight:500;">
-          💾 Simpan Perubahan
-        </button>
-        <a href="{{ route('produk.show', $produk->id) }}" 
-           class="btn-secondary"
-           style="padding:.6rem 1.4rem; border-radius:8px;">
-          Batal
-        </a>
-      </div>
-    </form>
-  </div>
+        </form>
+    </div>
 </div>
 @endsection

@@ -66,7 +66,7 @@
       <a href="{{ route('produk.edit', $produk->id ?? '#') }}" 
          class="btn-primary"
          style="padding:.6rem 1.2rem; border-radius:8px; font-weight:500;">
-         ✏️ Edit Produk
+         Edit Produk
       </a>
 
       <form action="{{ route('produk.destroy', $produk->id ?? '#') }}" 
@@ -77,7 +77,7 @@
         <button type="submit" 
                 class="btn-danger"
                 style="padding:.6rem 1.2rem; border-radius:8px; font-weight:500;">
-          🗑️ Hapus
+          Hapus
         </button>
       </form>
     </div>
