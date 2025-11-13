@@ -10,8 +10,6 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ContactController; // WAJIB ADA
 use App\Http\Controllers\KategoriJenisUsahaController;
 use App\Http\Controllers\PemilikUmkmController;
-use App\Http\Controllers\PendudukController;
-use App\Http\Controllers\DashboardUmkmController; // (Di-import dari bawah)
 
 /*
 |--------------------------------------------------------------------------
@@ -146,22 +144,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
             'update'  => 'kategori.update',
             'destroy' => 'kategori.destroy',
         ]);
-        Route::resource('pemilik', PemilikUmkmController::class)->names([
-            'index'   => 'pemilik.index',
-            'create'  => 'pemilik.create',
-            'store'   => 'pemilik.store',
-            'edit'    => 'pemilik.edit',
-            'update'  => 'pemilik.update',
-            'destroy' => 'pemilik.destroy',
-        ]);
-        Route::resource('penduduk', PendudukController::class)->names([
-            'index'   => 'penduduk.index',
-            'create'  => 'penduduk.create',
-            'store'   => 'penduduk.store',
-            'edit'    => 'penduduk.edit',
-            'update'  => 'penduduk.update',
-            'destroy' => 'penduduk.destroy',
-        ]);
+        Route::get('pemilik', [PemilikUmkmController::class, 'index'])->name('pemilik.index');
 });
 
 Route::get('/informasi/kuliner', [InformasiController::class, 'showKuliner'])->name('informasi.kuliner');

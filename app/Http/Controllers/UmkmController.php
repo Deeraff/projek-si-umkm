@@ -213,6 +213,35 @@ class UmkmController extends Controller
         }
     }
 
+    public function edit()
+    {
+        $user = Auth::user();
+
+        // Ambil data pemilik & usaha beserta relasi lengkap
+        $pemilik = PemilikUmkm::where('email', $user->email)
+            ->with(['usaha.legalitasUsaha', 'usaha.jenisUsaha'])
+            ->first();
+
+        // Jika user belum memiliki data usaha atau data pemilik tidak ditemukan,
+        // arahkan ke halaman pendaftaran form baru
+        if (!$pemilik || !$pemilik->usaha) {
+            return redirect()->route('umkm.form')
+                ->with('error', 'Anda belum mendaftarkan data usaha.');
+        }
+
+        $usaha = $pemilik->usaha;
+        $legalitas = $usaha->legalitasUsaha;
+        $jenisUsaha = KategoriJenisUsaha::all(); 
+
+        // Tampilkan view edit dengan data yang sudah ada
+        return view('umkm.edit', [
+            'pemilik' => $pemilik,
+            'usaha' => $usaha,
+            'legalitas' => $legalitas,
+            'jenisUsaha' => $jenisUsaha,
+        ]);
+    }
+
     /**
      * Metode baru untuk mereset status UMKM menjadi 'unverified' dan mengosongkan alasan_tolak.
      * Dipanggil saat user mengklik 'Ajukan Pendaftaran Ulang' dari halaman ditolak.
