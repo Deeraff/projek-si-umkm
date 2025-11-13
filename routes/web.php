@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ContactController; // WAJIB ADA
 use App\Http\Controllers\KategoriJenisUsahaController;
 use App\Http\Controllers\PemilikUmkmController;
+use App\Http\Controllers\PendudukController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/daftar-umkm', [UmkmController::class, 'showForm'])->name('umkm.form');
     Route::post('/daftar-umkm', [UmkmController::class, 'store'])->name('umkm.store');
     Route::get('/umkm', [UmkmController::class, 'index'])->name('kelola.umkm');
+    Route::post('/umkm/reset-status/{usaha_id}', [UmkmController::class, 'resetStatus'])->name('umkm.reset_status');
 });
 
 
@@ -93,7 +95,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/umkm/umkm-pendaftar', [DashboardController::class, 'umkmPendaftarIndex'])->name('umkm.pendaftar.index');
         Route::patch('/umkm/{umkm}/verify', [DashboardController::class, 'verify'])->name('umkm.verify');
         Route::get('/umkm/{umkm}/show', [DashboardController::class, 'show'])->name('umkm.show');
-        Route::delete('/umkm/{umkm}', [DashboardController::class, 'destroy'])->name('umkm.destroy');
+        Route::patch('/umkm/{id}/tolak', [DashboardController::class, 'reject'])->name('umkm.reject');
         Route::resource('kategori', KategoriJenisUsahaController::class)->names([
             'index'   => 'kategori.index',
             'create'  => 'kategori.create',
@@ -110,8 +112,15 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
             'update'  => 'pemilik.update',
             'destroy' => 'pemilik.destroy',
         ]);
+        Route::resource('penduduk', PendudukController::class)->names([
+            'index'   => 'penduduk.index',
+            'create'  => 'penduduk.create',
+            'store'   => 'penduduk.store',
+            'edit'    => 'penduduk.edit',
+            'update'  => 'penduduk.update',
+            'destroy' => 'penduduk.destroy',
+        ]);
 });
-
 
 Route::get('/informasi/kuliner', [InformasiController::class, 'showKuliner'])->name('informasi.kuliner');
 Route::get('/informasi/kerajinan', [InformasiController::class, 'showKerajinan'])->name('informasi.kerajinan');

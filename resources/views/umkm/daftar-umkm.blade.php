@@ -47,6 +47,28 @@
     }
 </style>
 @endpush
+@if (session('success'))
+    <div class="alert alert-success" style="background:#d1fae5;color:#065f46;padding:1rem;border-radius:8px;margin-bottom:1rem;">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('info'))
+    <div class="alert alert-info" style="background:#bfdbfe;color:#1e3a8a;padding:1rem;border-radius:8px;margin-bottom:1rem;">
+        {{ session('info') }}
+    </div>
+@endif
+
+@if ($errors->any())
+    <div class="alert alert-danger" style="background:#fee2e2;color:#991b1b;padding:1rem;border-radius:8px;margin-bottom:1rem;">
+        <strong>Terjadi kesalahan:</strong>
+        <ul style="margin-top:0.5rem;">
+            @foreach ($errors->all() as $error)
+                <li>- {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
 @section('content')
 <div class="landing-container py-10">

@@ -52,12 +52,19 @@
                         <tr>
                             <th>Status</th>
                             <td>
-                                @if ($umkm->status == 'verified')
+                                @if ($umkm->status_umkm == 'verified')
                                     <span class="badge bg-success">Terverifikasi</span>
+                                @elseif ($umkm->status_umkm == 'ditolak')
+                                    <span class="badge bg-danger">Ditolak</span>
+                                    @if (!empty($umkm->alasan_tolak))
+                                        <div class="mt-2 small text-danger">
+                                            <strong>Alasan:</strong> {{ $umkm->alasan_tolak }}
+                                        </div>
+                                    @endif
                                 @else
                                     <span class="badge bg-warning text-dark">Belum Diverifikasi</span>
                                 @endif
-                            </td>
+                            </td>                            
                         </tr>
                     </table>
                 </div>
