@@ -44,4 +44,9 @@ class DataUsaha extends Model
         return $this->hasOne(LegalitasUsaha::class, 'usaha_id');
     }
     
+    public function produk()
+    {
+        return $this->hasMany(DataProduk::class, 'usaha_id');
+    }
+
 }

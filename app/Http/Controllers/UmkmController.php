@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PemilikUmkm;
 use App\Models\DataUsaha;
+use App\Models\DataProduk;
+use App\Models\KategoriProduk;
 use App\Models\LegalitasUsaha;
 use App\Models\KategoriJenisUsaha;
 use Illuminate\Support\Facades\DB;
@@ -157,7 +159,7 @@ class UmkmController extends Controller
                 // Data umum untuk usaha
                 $usahaData = [
                     'nama_usaha' => $validated['nama_usaha'],
-                    'logo' => $logoPath ?? $usaha->logo ?? null, // Pertahankan logo lama jika tidak ada yang baru
+                    'logo' => $logoPath ?? $usaha->logo ?? null,
                     'jenis_usaha_id' => $validated['jenis_usaha_id'],
                     'bentuk_usaha' => $validated['bentuk_usaha'],
                     'alamat_usaha' => $validated['alamat_usaha'],
@@ -280,4 +282,134 @@ class UmkmController extends Controller
 
         return view('umkm.show', compact('usaha'));
     }
+
+    // ... (kode lama kamu di atas jangan diubah) ...
+
+    /**
+     * ==========================================
+     * BAGIAN BARU: Tambahkan mulai dari sini
+     * ==========================================
+     */
+
+    // 1. Menampilkan Halaman Detail Profil (Sejajar & Besar)
+    public function showDetailProfil($id)
+    {
+        // Pastikan model DataUsaha di-load dengan relasinya
+        $umkm = DataUsaha::with(['pemilik', 'legalitasUsaha', 'jenisUsaha'])->findOrFail($id);
+        
+        // Arahkan ke file view yang baru kita buat
+        return view('umkm.detail_profil_umkm', compact('umkm'));
+    }
+
+    // 2. Memproses Ganti Foto (Update Logo)
+    public function updateLogo(Request $request, $id)
+    {
+        // Validasi input gambar
+        $request->validate([
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Maksimal 2MB
+        ]);
+
+        // Cari data UMKM
+        $umkm = DataUsaha::findOrFail($id);
+
+        // Cek Keamanan: Pastikan yang login adalah pemiliknya
+        $user = Auth::user();
+        $pemilik = PemilikUmkm::where('email', $user->email)->first();
+
+        // Jika pemilik tidak ditemukan atau ID-nya beda, tolak
+        if (!$pemilik || $umkm->pemilik_id !== $pemilik->id) {
+            return back()->withErrors(['error' => 'Anda tidak memiliki izin untuk mengubah logo ini.']);
+        }
+
+        // Proses Ganti File
+        if ($request->hasFile('logo')) {
+            // Hapus logo lama dari penyimpanan jika ada
+            if ($umkm->logo && Storage::disk('public')->exists($umkm->logo)) {
+                Storage::disk('public')->delete($umkm->logo);
+            }
+
+            // Simpan logo baru ke folder 'umkm_logos'
+            $path = $request->file('logo')->store('umkm_logos', 'public');
+
+            // Update nama file di database
+            $umkm->logo = $path;
+            $umkm->save();
+
+            return back()->with('success', 'Logo berhasil diperbarui!');
+        }
+
+        return back()->withErrors(['error' => 'Gagal mengunggah gambar.']);
+    }
+
+    // ... kode-kode sebelumnya ...
+
+    /**
+     * Menampilkan Form Edit Data UMKM
+     */
+    public function edit()
+    {
+        $user = Auth::user();
+        $pemilik = PemilikUmkm::where('email', $user->email)->first();
+
+        if (!$pemilik || !$pemilik->usaha) {
+            return redirect()->route('umkm.form')->with('error', 'Data usaha tidak ditemukan.');
+        }
+
+        $usaha = $pemilik->usaha;
+        $jenisUsaha = KategoriJenisUsaha::all(); // Untuk dropdown jenis usaha
+
+        return view('umkm.edit', compact('pemilik', 'usaha', 'jenisUsaha'));
+    }
+
+    /**
+     * Memproses Update Data UMKM
+     */
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+        $pemilik = PemilikUmkm::where('email', $user->email)->first();
+        $usaha = $pemilik->usaha;
+
+        // 1. Validasi Input (Sesuaikan dengan tabel data_usaha)
+        $validated = $request->validate([
+            'nama_usaha' => 'required|string|max:150',
+            'jenis_usaha_id' => 'required|exists:kategori_jenis_usaha,id',
+            'bentuk_usaha' => 'required|string|max:50',
+            'alamat_usaha' => 'required|string',
+            'no_telp_usaha' => 'required|string|max:20',
+            'status_tempat' => 'required|in:milik sendiri,sewa,pinjam',
+            'tenaga_kerja_l' => 'nullable|integer|min:0',
+            'tenaga_kerja_p' => 'nullable|integer|min:0',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Opsional
+        ]);
+
+        // 2. Proses Logo (Jika ada upload baru)
+        if ($request->hasFile('logo')) {
+            // Hapus logo lama
+            if ($usaha->logo && Storage::disk('public')->exists($usaha->logo)) {
+                Storage::disk('public')->delete($usaha->logo);
+            }
+            // Simpan logo baru
+            $logoPath = $request->file('logo')->store('umkm_logos', 'public');
+            $usaha->logo = $logoPath;
+        }
+
+        // 3. Update Data Usaha
+        $usaha->update([
+            'nama_usaha' => $validated['nama_usaha'],
+            'jenis_usaha_id' => $validated['jenis_usaha_id'],
+            'bentuk_usaha' => $validated['bentuk_usaha'],
+            'alamat_usaha' => $validated['alamat_usaha'],
+            'no_telp_usaha' => $validated['no_telp_usaha'],
+            'status_tempat' => $validated['status_tempat'],
+            'tenaga_kerja_l' => $validated['tenaga_kerja_l'] ?? 0,
+            'tenaga_kerja_p' => $validated['tenaga_kerja_p'] ?? 0,
+            // Status UMKM biasanya tidak berubah jadi verified otomatis kalau diedit,
+            // tapi tergantung kebijakan. Di sini kita biarkan statusnya tetap.
+        ]);
+
+        return redirect()->route('kelola.umkm')->with('success', 'Data UMKM berhasil diperbarui!');
+    }
+
+    // ... (pastikan ini sebelum kurung kurawal penutup class) ...
 }
