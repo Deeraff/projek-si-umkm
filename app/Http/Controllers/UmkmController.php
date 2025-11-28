@@ -9,6 +9,8 @@ use App\Models\DataProduk;
 use App\Models\KategoriProduk;
 use App\Models\LegalitasUsaha;
 use App\Models\KategoriJenisUsaha;
+// ✅ TAMBAHAN: Import Model Jadwal agar tidak error saat create/update jadwal
+use App\Models\JadwalOperasional; 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -219,7 +221,7 @@ class UmkmController extends Controller
 
         // Ambil data pemilik & usaha beserta relasi lengkap
         $pemilik = PemilikUmkm::where('email', $user->email)
-            ->with(['usaha.legalitasUsaha', 'usaha.jenisUsaha'])
+            ->with(['usaha.legalitasUsaha', 'usaha.jenisUsaha', 'usaha.jadwal']) // ✅ Load jadwal juga
             ->first();
 
         // Jika user belum memiliki data usaha atau data pemilik tidak ditemukan,
@@ -283,8 +285,6 @@ class UmkmController extends Controller
         return view('umkm.show', compact('usaha'));
     }
 
-    // ... (kode lama kamu di atas jangan diubah) ...
-
     /**
      * ==========================================
      * BAGIAN BARU: Tambahkan mulai dari sini
@@ -341,28 +341,8 @@ class UmkmController extends Controller
         return back()->withErrors(['error' => 'Gagal mengunggah gambar.']);
     }
 
-    // ... kode-kode sebelumnya ...
-
     /**
-     * Menampilkan Form Edit Data UMKM
-     */
-    public function edit()
-    {
-        $user = Auth::user();
-        $pemilik = PemilikUmkm::where('email', $user->email)->first();
-
-        if (!$pemilik || !$pemilik->usaha) {
-            return redirect()->route('umkm.form')->with('error', 'Data usaha tidak ditemukan.');
-        }
-
-        $usaha = $pemilik->usaha;
-        $jenisUsaha = KategoriJenisUsaha::all(); // Untuk dropdown jenis usaha
-
-        return view('umkm.edit', compact('pemilik', 'usaha', 'jenisUsaha'));
-    }
-
-    /**
-     * Memproses Update Data UMKM
+     * Memproses Update Data UMKM (Termasuk Jadwal Operasional)
      */
     public function update(Request $request)
     {
@@ -370,7 +350,7 @@ class UmkmController extends Controller
         $pemilik = PemilikUmkm::where('email', $user->email)->first();
         $usaha = $pemilik->usaha;
 
-        // 1. Validasi Input (Sesuaikan dengan tabel data_usaha)
+        // 1. Validasi Input
         $validated = $request->validate([
             'nama_usaha' => 'required|string|max:150',
             'jenis_usaha_id' => 'required|exists:kategori_jenis_usaha,id',
@@ -381,6 +361,11 @@ class UmkmController extends Controller
             'tenaga_kerja_l' => 'nullable|integer|min:0',
             'tenaga_kerja_p' => 'nullable|integer|min:0',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Opsional
+            
+            // ✅ TAMBAHAN BARU: Validasi untuk jadwal
+            'jam_buka'       => 'nullable',
+            'jam_tutup'      => 'nullable',
+            'hari_libur'     => 'nullable|array', // Harus array karena dari checkbox
         ]);
 
         // 2. Proses Logo (Jika ada upload baru)
@@ -394,7 +379,7 @@ class UmkmController extends Controller
             $usaha->logo = $logoPath;
         }
 
-        // 3. Update Data Usaha
+        // 3. Update Data Usaha (Data Inti)
         $usaha->update([
             'nama_usaha' => $validated['nama_usaha'],
             'jenis_usaha_id' => $validated['jenis_usaha_id'],
@@ -404,12 +389,25 @@ class UmkmController extends Controller
             'status_tempat' => $validated['status_tempat'],
             'tenaga_kerja_l' => $validated['tenaga_kerja_l'] ?? 0,
             'tenaga_kerja_p' => $validated['tenaga_kerja_p'] ?? 0,
-            // Status UMKM biasanya tidak berubah jadi verified otomatis kalau diedit,
-            // tapi tergantung kebijakan. Di sini kita biarkan statusnya tetap.
         ]);
+
+        // ✅ TAMBAHAN BARU: SIMPAN JADWAL OPERASIONAL
+        
+        // Ubah array checkbox ['Senin', 'Minggu'] jadi string "Senin, Minggu"
+        // Jika tidak ada yang dicentang, maka null
+        $strHariLibur = $request->hari_libur ? implode(', ', $request->hari_libur) : null;
+
+        // Cek apakah sudah punya jadwal atau belum
+        // Gunakan updateOrCreate untuk otomatis update jika ada, create jika belum
+        JadwalOperasional::updateOrCreate(
+            ['data_usaha_id' => $usaha->id], // Kondisi pencarian (WHERE)
+            [
+                'jam_buka'   => $request->jam_buka,
+                'jam_tutup'  => $request->jam_tutup,
+                'hari_libur' => $strHariLibur,
+            ]
+        );
 
         return redirect()->route('kelola.umkm')->with('success', 'Data UMKM berhasil diperbarui!');
     }
-
-    // ... (pastikan ini sebelum kurung kurawal penutup class) ...
 }

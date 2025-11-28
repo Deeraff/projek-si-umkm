@@ -24,9 +24,10 @@
 
         {{-- 📋 Grid data --}}
         <div class="umkm-info-grid">
-            {{-- Data Pemilik --}}
+            
+            {{-- === DATA PEMILIK === --}}
             <div class="umkm-info-item">
-                <strong>Nama</strong>
+                <strong>Nama Pemilik</strong>
                 <span>{{ $pemilik->nama_lengkap }}</span>
             </div>
             <div class="umkm-info-item">
@@ -46,7 +47,7 @@
                 <span>{{ $pemilik->alamat_domisili }}</span>
             </div>
 
-            {{-- Data Usaha --}}
+            {{-- === DATA USAHA === --}}
             <div class="umkm-info-item">
                 <strong>Nama Usaha</strong>
                 <span>{{ $usaha->nama_usaha }}</span>
@@ -74,6 +75,25 @@
             <div class="umkm-info-item">
                 <strong>Tenaga Kerja</strong>
                 <span>L: {{ $usaha->tenaga_kerja_l }} / P: {{ $usaha->tenaga_kerja_p }}</span>
+            </div>
+
+            {{-- 🔥 JADWAL OPERASIONAL (BARU) 🔥 --}}
+            {{-- Mengambil data dari tabel jadwal_operasionals via relasi --}}
+            
+            <div class="umkm-info-item" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
+                <strong style="color: #166534;">Jam Operasional</strong>
+                <span>
+                    {{-- Menggunakan null coalescing (??) agar tidak error jika jadwal belum diisi --}}
+                    {{ $usaha->jadwal->jam_buka ?? 'Belum diatur' }} - 
+                    {{ $usaha->jadwal->jam_tutup ?? 'Belum diatur' }} WIB
+                </span>
+            </div>
+
+            <div class="umkm-info-item" style="background-color: #fef2f2; border: 1px solid #fecaca;">
+                <strong style="color: #991b1b;">Hari Libur</strong>
+                <span style="color: #dc2626; font-weight: bold;">
+                    {{ $usaha->jadwal->hari_libur ?? '-' }}
+                </span>
             </div>
 
             @if ($usaha->logo)
@@ -108,9 +128,8 @@
             </div>
         </div>
 
-        {{-- Tombol Edit (SUDAH DIPERBAIKI) --}}
+        {{-- Tombol Edit --}}
         <div class="text-center mt-8">
-            {{-- Mengarah ke route umkm.edit --}}
             <a href="{{ route('umkm.edit') }}" class="btn-secondary inline-flex items-center gap-2">
                 <i class="fa-solid fa-pen-to-square"></i> Edit Data UMKM
             </a>

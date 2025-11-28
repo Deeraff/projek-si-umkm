@@ -10,6 +10,7 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ContactController; // WAJIB ADA
 use App\Http\Controllers\KategoriJenisUsahaController;
 use App\Http\Controllers\PemilikUmkmController;
+use App\Http\Controllers\DashboardUmkmController;
 
 /*
 |--------------------------------------------------------------------------

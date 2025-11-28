@@ -11,6 +11,7 @@
             @csrf
             @method('PUT') {{-- Penting untuk update data --}}
 
+            {{-- === BAGIAN 1: DATA UTAMA === --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {{-- NAMA USAHA --}}
@@ -91,6 +92,50 @@
                     <p class="text-xs text-gray-500 mt-1">Biarkan kosong jika tidak ingin mengganti logo.</p>
                 </div>
 
+            </div>
+
+            {{-- === BAGIAN 2: JADWAL OPERASIONAL (TAMBAHAN BARU) === --}}
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-xl font-bold text-green-700 mb-4">Pengaturan Jadwal Operasional</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- JAM BUKA --}}
+                    <div class="form-group">
+                        <label class="block text-gray-700 font-bold mb-2">Jam Buka</label>
+                        {{-- Mengambil data dari relasi jadwal jika ada --}}
+                        <input type="time" name="jam_buka" class="form-input w-full border rounded px-3 py-2"
+                            value="{{ old('jam_buka', $usaha->jadwal?->jam_buka) }}">
+                    </div>
+
+                    {{-- JAM TUTUP --}}
+                    <div class="form-group">
+                        <label class="block text-gray-700 font-bold mb-2">Jam Tutup</label>
+                        <input type="time" name="jam_tutup" class="form-input w-full border rounded px-3 py-2"
+                            value="{{ old('jam_tutup', $usaha->jadwal?->jam_tutup) }}">
+                    </div>
+                </div>
+
+                {{-- HARI LIBUR --}}
+                <div class="form-group mt-4">
+                    <label class="block text-gray-700 font-bold mb-2">Pilih Hari Libur (Centang jika libur)</label>
+                    <div class="flex flex-wrap gap-4 mt-2">
+                        @php
+                            // Mengambil data hari libur dari database (string), dipecah jadi array
+                            $liburSaved = explode(', ', $usaha->jadwal?->hari_libur ?? '');
+                            $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+                        @endphp
+
+                        @foreach($hariList as $hari)
+                            <label class="inline-flex items-center space-x-2 cursor-pointer bg-gray-50 px-3 py-2 rounded border hover:bg-gray-100 transition">
+                                <input type="checkbox" name="hari_libur[]" value="{{ $hari }}"
+                                    class="form-checkbox h-5 w-5 text-green-600 rounded focus:ring-green-500"
+                                    {{ in_array($hari, $liburSaved) ? 'checked' : '' }}>
+                                <span class="text-gray-700">{{ $hari }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">*Biarkan kosong jika toko buka setiap hari.</p>
+                </div>
             </div>
 
             {{-- TOMBOL AKSI --}}
