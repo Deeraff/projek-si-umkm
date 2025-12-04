@@ -346,20 +346,20 @@ class UmkmController extends Controller
     /**
      * Menampilkan Form Edit Data UMKM
      */
-    public function edit()
-    {
-        $user = Auth::user();
-        $pemilik = PemilikUmkm::where('email', $user->email)->first();
+    // public function edit()
+    // {
+    //     $user = Auth::user();
+    //     $pemilik = PemilikUmkm::where('email', $user->email)->first();
 
-        if (!$pemilik || !$pemilik->usaha) {
-            return redirect()->route('umkm.form')->with('error', 'Data usaha tidak ditemukan.');
-        }
+    //     if (!$pemilik || !$pemilik->usaha) {
+    //         return redirect()->route('umkm.form')->with('error', 'Data usaha tidak ditemukan.');
+    //     }
 
-        $usaha = $pemilik->usaha;
-        $jenisUsaha = KategoriJenisUsaha::all(); // Untuk dropdown jenis usaha
+    //     $usaha = $pemilik->usaha;
+    //     $jenisUsaha = KategoriJenisUsaha::all(); // Untuk dropdown jenis usaha
 
-        return view('umkm.edit', compact('pemilik', 'usaha', 'jenisUsaha'));
-    }
+    //     return view('umkm.edit', compact('pemilik', 'usaha', 'jenisUsaha'));
+    // }
 
     /**
      * Memproses Update Data UMKM
