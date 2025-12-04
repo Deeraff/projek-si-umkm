@@ -20,7 +20,7 @@
 
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="{{ asset('storage/liz.jpg') }}" alt="Banner 1" class="d-block w-100"> 
+                <img src="{{ asset('storage/banner1.png') }}" alt="Banner 1" class="d-block w-100"> 
                 <div class="carousel-overlay"></div>
             </div>
         </div>
@@ -28,7 +28,7 @@
     {{-- ===== ACTION BUTTONS ===== --}}
     <div class="action-buttons-container">
         {{-- Button Petunjuk --}}
-        <a href="{{ url('/petunjuk') }}" class="action-button action-button-blue">
+        <a href="{{ route('landing.petunjuk') }}" class="action-button action-button-blue">
             <div class="button-content">
                 <span class="button-text">PETUNJUK</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="button-icon" viewBox="0 0 16 16">
