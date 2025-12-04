@@ -24,9 +24,10 @@
 
         {{-- 📋 Grid data --}}
         <div class="umkm-info-grid">
-            {{-- Data Pemilik --}}
+            
+            {{-- === DATA PEMILIK === --}}
             <div class="umkm-info-item">
-                <strong>Nama</strong>
+                <strong>Nama Pemilik</strong>
                 <span>{{ $pemilik->nama_lengkap }}</span>
             </div>
             <div class="umkm-info-item">
@@ -46,7 +47,7 @@
                 <span>{{ $pemilik->alamat_domisili }}</span>
             </div>
 
-            {{-- Data Usaha --}}
+            {{-- === DATA USAHA === --}}
             <div class="umkm-info-item">
                 <strong>Nama Usaha</strong>
                 <span>{{ $usaha->nama_usaha }}</span>
@@ -69,11 +70,52 @@
             </div>
             <div class="umkm-info-item">
                 <strong>Status Tempat</strong>
-                <span>{{ ucfirst($usaha->status_tempat) }}</span>
+                <span>{{ ucfirst($usaha->status_tempat ?? '-') }}</span>
             </div>
             <div class="umkm-info-item">
                 <strong>Tenaga Kerja</strong>
-                <span>L: {{ $usaha->tenaga_kerja_l }} / P: {{ $usaha->tenaga_kerja_p }}</span>
+                <span>L: {{ $usaha->tenaga_kerja_l ?? 0 }}, P: {{ $usaha->tenaga_kerja_p ?? 0 }}</span>
+            </div>
+
+            {{-- 🔥 JADWAL OPERASIONAL (UPDATED) 🔥 --}}
+            
+            <div class="umkm-info-item" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
+                <strong style="color: #166534;">Jam Operasional</strong>
+                <span>
+                    {{-- Menggunakan null coalescing (??) agar tidak error jika jadwal belum diisi --}}
+                    {{ $usaha->jadwal->jam_buka ?? 'Belum diatur' }} - 
+                    {{ $usaha->jadwal->jam_tutup ?? 'Belum diatur' }} WIB
+                </span>
+            </div>
+
+            <div class="umkm-info-item" style="background-color: #fef2f2; border: 1px solid #fecaca;">
+                <strong style="color: #991b1b;">Hari Libur</strong>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    
+                    {{-- 1. Libur Rutin Mingguan --}}
+                    @if(!empty($usaha->jadwal->hari_libur))
+                        <span style="color: #dc2626; font-weight: bold;">
+                            Rutin: {{ $usaha->jadwal->hari_libur }}
+                        </span>
+                    @endif
+
+                    {{-- 2. Libur Tanggal (Sementara) --}}
+                    @if(!empty($usaha->jadwal->tgl_libur_mulai) && !empty($usaha->jadwal->tgl_libur_selesai))
+                        @php
+                            // Format Tanggal (Misal: 29 Nov - 02 Des 2024)
+                            $m = \Carbon\Carbon::parse($usaha->jadwal->tgl_libur_mulai)->translatedFormat('d M');
+                            $s = \Carbon\Carbon::parse($usaha->jadwal->tgl_libur_selesai)->translatedFormat('d M Y');
+                        @endphp
+                        <span style="color: #991b1b; font-size: 0.9em; background: #fee2e2; padding: 2px 6px; border-radius: 4px; border: 1px solid #fecaca; width: fit-content;">
+                            Libur Sementara: {{ $m }} - {{ $s }}
+                        </span>
+                    @endif
+
+                    {{-- Jika Kosong --}}
+                    @if(empty($usaha->jadwal->hari_libur) && empty($usaha->jadwal->tgl_libur_mulai))
+                        <span style="color: #dc2626;">-</span>
+                    @endif
+                </div>
             </div>
 
             @if ($usaha->logo)
@@ -108,9 +150,8 @@
             </div>
         </div>
 
-        {{-- Tombol Edit (SUDAH DIPERBAIKI) --}}
+        {{-- Tombol Edit --}}
         <div class="text-center mt-8">
-            {{-- Mengarah ke route umkm.edit --}}
             <a href="{{ route('umkm.edit') }}" class="btn-secondary inline-flex items-center gap-2">
                 <i class="fa-solid fa-pen-to-square"></i> Edit Data UMKM
             </a>

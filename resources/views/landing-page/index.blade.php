@@ -8,23 +8,145 @@
 
 @section('content')
 <div class="landing-container">
-    {{-- ===== BANNER CAROUSEL ===== --}}
-    <div id="carouselExampleIndicators" class="carousel slide carousel-custom" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            @for ($i = 0; $i < 3; $i++)
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ $i }}" 
-                        class="{{ $i === 0 ? 'active' : '' }}" aria-label="Slide {{ $i + 1 }}">
-                </button>
-            @endfor
-        </div>
+    {{-- ===== SEARCH + FILTER (FULL WIDTH / SAMA RATA) ===== --}}
+<style>
+    /* Container pembungkus utama */
+    #search-override-container {
+        width: 100%;
+        margin-top: 40px;
+        margin-bottom: 30px;
+        /* Hapus padding manual agar mengikuti container induk */
+    }
+
+    /* BARIS UTAMA: KOTAK PUTIH */
+    .custom-search-bar {
+        background: #fff;
+        padding: 10px;
+        border-radius: 12px; /* Lengkungan sudut */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        
+        /* PERUBAHAN DISINI: */
+        width: 100%; /* Agar memenuhi lebar container */
+        max-width: 100%; /* Memastikan tidak dibatasi lebarnya */
+    }
+
+    /* 1. BAGIAN INPUT + IKON */
+    .search-input-box {
+        display: flex;
+        align-items: center;
+        background: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 0 15px;
+        flex: 2; /* Porsi ruang paling besar */
+        height: 50px;
+    }
+
+    .search-input-box input {
+        border: none !important;
+        background: transparent !important;
+        outline: none !important;
+        box-shadow: none !important;
+        width: 100%;
+        margin-left: 10px;
+        font-size: 16px;
+        color: #333;
+    }
+
+    /* 2. BAGIAN DROPDOWN */
+    .search-filter-box {
+        flex: 1; /* Porsi ruang sedang */
+        min-width: 200px; /* Lebar minimum agar teks tidak terpotong */
+    }
+    
+    .custom-select-style {
+        height: 50px !important;
+        border-radius: 8px !important;
+        border: 1px solid #ced4da !important;
+        width: 100%;
+        padding: 0 15px;
+        cursor: pointer;
+    }
+
+    /* 3. BAGIAN TOMBOL */
+    .search-btn-box {
+        flex: 0 0 auto; /* Ukuran pas sesuai tombol */
+    }
+
+    .custom-btn-style {
+        height: 50px !important;
+        border-radius: 8px !important;
+        padding: 0 40px !important; /* Padding tombol agak lebar biar gagah */
+        font-weight: bold;
+        background-color: #198754 !important;
+        color: white !important;
+        border: none;
+        transition: 0.3s;
+        font-size: 16px;
+    }
+
+    .custom-btn-style:hover {
+        background-color: #157347 !important;
+    }
+
+    /* Tampilan HP: Tumpuk ke bawah */
+    @media (max-width: 768px) {
+        .custom-search-bar {
+            flex-direction: column;
+            padding: 20px;
+            gap: 15px;
+        }
+        .search-input-box, .search-filter-box, .search-btn-box, .custom-btn-style {
+            width: 100%;
+            flex: none;
+        }
+    }
+</style>
+
+{{-- Pastikan ini berada DI DALAM class "container" atau "landing-container" yang sama dengan tombol bawah --}}
+<div class="container mb-4"> {{-- Saya tambahkan class container bawaan bootstrap disini --}}
+    <div id="search-override-container">
+        <form action="{{ url('/') }}" method="GET" style="width: 100%;">
+            
+            <div class="custom-search-bar">
+                
+                {{-- 1. INPUT SEARCH --}}
+                <div class="search-input-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#6c757d" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari UMKM atau Produk...">
+                </div>
+
+                {{-- 2. DROPDOWN FILTER --}}
+                <div class="search-filter-box">
+                    <select name="filter" class="form-select custom-select-style">
+                        <option value="">Semua Kategori</option>
+                        <option value="terpopuler" {{ request('filter') == 'terpopuler' ? 'selected' : '' }}>Terpopuler</option>
+                        <option value="24jam" {{ request('filter') == '24jam' ? 'selected' : '' }}>Kuliner 24 Jam</option>
+                        <option value="khas" {{ request('filter') == 'khas' ? 'selected' : '' }}>Kuliner Khas</option>
+                    </select>
+                </div>
+
+                {{-- 3. TOMBOL CARI --}}
+                <div class="search-btn-box">
+                    <button type="submit" class="custom-btn-style">
+                        CARI
+                    </button>
+                </div>
 
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="{{ asset('storage/banner1.png') }}" alt="Banner 1" class="d-block w-100"> 
+                <img src="{{ asset('storage/liz.jpg') }}" alt="Banner 1" class="d-block w-100"> 
                 <div class="carousel-overlay"></div>
             </div>
-        </div>
+
+        </form>
     </div>
+</div>
     {{-- ===== ACTION BUTTONS ===== --}}
     <div class="action-buttons-container">
         {{-- Button Petunjuk --}}
@@ -73,7 +195,7 @@
         @endauth
 
         {{-- Button Pengaduan Masyarakat --}}
-        <a href="{{ url('/pengaduan') }}" class="action-button action-button-yellow">
+        <!-- <a href="{{ url('/pengaduan') }}" class="action-button action-button-yellow">
             <div class="button-content">
                 <span class="button-text">PENGADUAN MASYARAKAT</span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="button-icon" viewBox="0 0 16 16">
@@ -82,7 +204,7 @@
                 </svg>
             </div>
             <div class="button-shine"></div>
-        </a>
+        </a> -->
     </div>
 
     {{-- ===== DATA UMKM UNGGULAN ===== --}}
