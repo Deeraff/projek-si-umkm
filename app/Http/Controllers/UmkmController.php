@@ -47,7 +47,7 @@ class UmkmController extends Controller
     
         // Ambil data pemilik & usaha beserta relasi lengkap
         $pemilik = PemilikUmkm::where('email', $user->email)
-            ->with(['usaha.legalitasUsaha', 'usaha.jenisUsaha'])
+            ->with(['usaha.legalitasUsaha', 'usaha.jenisUsaha', 'usaha.jadwal']) // ✅ Load Jadwal juga
             ->first();
     
         // Jika user belum memiliki data usaha → arahkan ke form pendaftaran
@@ -366,6 +366,10 @@ class UmkmController extends Controller
             'jam_buka'       => 'nullable',
             'jam_tutup'      => 'nullable',
             'hari_libur'     => 'nullable|array', // Harus array karena dari checkbox
+            
+            // ✅ TAMBAHAN: Validasi Tanggal Libur
+            'tgl_libur_mulai'   => 'nullable|date',
+            'tgl_libur_selesai' => 'nullable|date|after_or_equal:tgl_libur_mulai',
         ]);
 
         // 2. Proses Logo (Jika ada upload baru)
@@ -405,6 +409,9 @@ class UmkmController extends Controller
                 'jam_buka'   => $request->jam_buka,
                 'jam_tutup'  => $request->jam_tutup,
                 'hari_libur' => $strHariLibur,
+                // Simpan tanggal libur
+                'tgl_libur_mulai'   => $request->tgl_libur_mulai,
+                'tgl_libur_selesai' => $request->tgl_libur_selesai,
             ]
         );
 

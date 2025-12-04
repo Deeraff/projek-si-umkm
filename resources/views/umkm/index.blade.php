@@ -70,15 +70,14 @@
             </div>
             <div class="umkm-info-item">
                 <strong>Status Tempat</strong>
-                <span>{{ ucfirst($usaha->status_tempat) }}</span>
+                <span>{{ ucfirst($usaha->status_tempat ?? '-') }}</span>
             </div>
             <div class="umkm-info-item">
                 <strong>Tenaga Kerja</strong>
-                <span>L: {{ $usaha->tenaga_kerja_l }} / P: {{ $usaha->tenaga_kerja_p }}</span>
+                <span>L: {{ $usaha->tenaga_kerja_l ?? 0 }}, P: {{ $usaha->tenaga_kerja_p ?? 0 }}</span>
             </div>
 
-            {{-- 🔥 JADWAL OPERASIONAL (BARU) 🔥 --}}
-            {{-- Mengambil data dari tabel jadwal_operasionals via relasi --}}
+            {{-- 🔥 JADWAL OPERASIONAL (UPDATED) 🔥 --}}
             
             <div class="umkm-info-item" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
                 <strong style="color: #166534;">Jam Operasional</strong>
@@ -91,9 +90,32 @@
 
             <div class="umkm-info-item" style="background-color: #fef2f2; border: 1px solid #fecaca;">
                 <strong style="color: #991b1b;">Hari Libur</strong>
-                <span style="color: #dc2626; font-weight: bold;">
-                    {{ $usaha->jadwal->hari_libur ?? '-' }}
-                </span>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    
+                    {{-- 1. Libur Rutin Mingguan --}}
+                    @if(!empty($usaha->jadwal->hari_libur))
+                        <span style="color: #dc2626; font-weight: bold;">
+                            Rutin: {{ $usaha->jadwal->hari_libur }}
+                        </span>
+                    @endif
+
+                    {{-- 2. Libur Tanggal (Sementara) --}}
+                    @if(!empty($usaha->jadwal->tgl_libur_mulai) && !empty($usaha->jadwal->tgl_libur_selesai))
+                        @php
+                            // Format Tanggal (Misal: 29 Nov - 02 Des 2024)
+                            $m = \Carbon\Carbon::parse($usaha->jadwal->tgl_libur_mulai)->translatedFormat('d M');
+                            $s = \Carbon\Carbon::parse($usaha->jadwal->tgl_libur_selesai)->translatedFormat('d M Y');
+                        @endphp
+                        <span style="color: #991b1b; font-size: 0.9em; background: #fee2e2; padding: 2px 6px; border-radius: 4px; border: 1px solid #fecaca; width: fit-content;">
+                            Libur Sementara: {{ $m }} - {{ $s }}
+                        </span>
+                    @endif
+
+                    {{-- Jika Kosong --}}
+                    @if(empty($usaha->jadwal->hari_libur) && empty($usaha->jadwal->tgl_libur_mulai))
+                        <span style="color: #dc2626;">-</span>
+                    @endif
+                </div>
             </div>
 
             @if ($usaha->logo)

@@ -9,6 +9,65 @@
 @endpush
 
 @section('content')
+
+{{-- 
+    =======================================================
+    LOGIKA OTOMATIS CEK HARI & TANGGAL
+    =======================================================
+--}}
+@php
+    // 1. Setup Waktu
+    \Carbon\Carbon::setLocale('id');
+    $now = \Carbon\Carbon::now();
+    $tglHariIni = $now->format('Y-m-d'); // Format: 2024-11-30
+
+    // Array Hari Manual (Biar aman bahasa Indonesia)
+    $namaHari = [
+        0 => 'Minggu', 1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu',
+        4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu'
+    ];
+    $hariIniStr = $namaHari[$now->dayOfWeek]; 
+
+    // 2. Ambil Data Jadwal
+    $jamBuka  = $usaha->jadwal->jam_buka ?? '-';
+    $jamTutup = $usaha->jadwal->jam_tutup ?? '-';
+    $listLiburRutin = $usaha->jadwal->hari_libur ?? ''; // Contoh: "Sabtu, Minggu"
+    
+    // Ambil Tanggal Libur Sementara
+    $tglMulai = $usaha->jadwal->tgl_libur_mulai ?? null;
+    $tglSelesai = $usaha->jadwal->tgl_libur_selesai ?? null;
+
+    // 3. Logika Penentuan Status
+    $statusToko = 'BUKA';
+    $warnaTeks = '#198754'; // Hijau
+    $infoLibur = '';
+
+    // A. Cek Libur Tanggal Tertentu (Prioritas Utama)
+    $isLiburTanggal = false;
+    if ($tglMulai && $tglSelesai) {
+        if ($tglHariIni >= $tglMulai && $tglHariIni <= $tglSelesai) {
+            $isLiburTanggal = true;
+            // Format tanggal cantik (misal: 25 Nov - 30 Nov)
+            $mulaiIndo = \Carbon\Carbon::parse($tglMulai)->translatedFormat('d M');
+            $selesaiIndo = \Carbon\Carbon::parse($tglSelesai)->translatedFormat('d M');
+            $infoLibur = "Tutup Sementara ($mulaiIndo - $selesaiIndo)";
+        }
+    }
+
+    // B. Cek Libur Rutin (Jika tidak sedang libur tanggal)
+    $isLiburRutin = false;
+    if (!$isLiburTanggal && !empty($listLiburRutin) && str_contains($listLiburRutin, $hariIniStr)) {
+        $isLiburRutin = true;
+        $infoLibur = "Libur Rutin: $listLiburRutin";
+    }
+
+    // C. Finalisasi Status
+    if ($isLiburTanggal || $isLiburRutin) {
+        $statusToko = 'TUTUP';
+        $warnaTeks = '#dc3545'; // Merah
+    }
+@endphp
+
 <div class="landing-container py-10">
 
     <h2 class="section-title-gradient text-center mb-10">Detail UMKM</h2>
@@ -29,8 +88,31 @@
             </div>
 
             {{-- ✅ Informasi umum --}}
-            <div class="flex-1 space-y-2">
-                <h3 class="text-3xl font-bold text-green-700 mb-4">{{ $usaha->nama_usaha }}</h3>
+            <div class="flex-1 space-y-2 w-full">
+                
+                {{-- HEADER: NAMA USAHA --}}
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
+                    <h3 class="text-3xl font-bold text-green-700">{{ $usaha->nama_usaha }}</h3>
+                </div>
+
+                {{-- Jam Buka Tutup --}}
+                <div class="text-sm text-gray-600 mb-4 flex flex-wrap items-center gap-2">
+                    <i class="bi bi-clock-fill text-green-600"></i> 
+                    <span class="font-medium">Jam Buka Tutup:</span> 
+                    {{ $jamBuka }} - {{ $jamTutup }} WIB
+                    
+                    {{-- Tampilkan Label Libur jika ada --}}
+                    @if($infoLibur)
+                        <span class="text-red-600 text-xs bg-red-50 px-2 py-0.5 rounded border border-red-200 font-semibold ml-2">
+                            {{ $infoLibur }}
+                        </span>
+                    @elseif($listLiburRutin)
+                         <span class="text-gray-500 text-xs bg-gray-100 px-2 py-0.5 rounded border border-gray-200 ml-2">
+                            Libur: {{ $listLiburRutin }}
+                        </span>
+                    @endif
+                </div>
+
                 <div class="umkm-info-grid">
                     <div class="umkm-info-item">
                         <strong>Nama Pemilik</strong>
@@ -52,9 +134,13 @@
                         <strong>Status Tempat</strong>
                         <span>{{ ucfirst($usaha->status_tempat ?? '-') }}</span>
                     </div>
+                    
+                    {{-- Status Hari Ini --}}
                     <div class="umkm-info-item">
-                        <strong>Tenaga Kerja</strong>
-                        <span>L: {{ $usaha->tenaga_kerja_l ?? 0 }}, P: {{ $usaha->tenaga_kerja_p ?? 0 }}</span>
+                        <strong>Hari Ini ({{ $hariIniStr }})</strong>
+                        <span style="font-weight: bold; font-size: 1.2rem; color: {{ $warnaTeks }};">
+                            {{ $statusToko }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -72,21 +158,23 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($produkAktif as $produk)
                         <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition">
-                            @if($produk->foto_produk)
-                                <img src="{{ asset('storage/' . $produk->foto_produk) }}"
-                                    alt="{{ $produk->nama_produk }}"
-                                    class="w-full h-36 object-cover">
-                            @else
-                                <div class="w-full h-36 bg-gray-100 flex items-center justify-center text-gray-400">
-                                    <i class="bi bi-box-seam" style="font-size:2rem;"></i>
-                                </div>
-                            @endif
+                            <a href="{{ route('produk.detail', $produk->id) }}" class="block h-full">
+                                @if($produk->foto_produk)
+                                    <img src="{{ asset('storage/' . $produk->foto_produk) }}"
+                                        alt="{{ $produk->nama_produk }}"
+                                        class="w-full h-36 object-cover">
+                                @else
+                                    <div class="w-full h-36 bg-gray-100 flex items-center justify-center text-gray-400">
+                                        <i class="bi bi-box-seam" style="font-size:2rem;"></i>
+                                    </div>
+                                @endif
 
-                            <div class="p-4">
-                                <h5 class="text-lg font-bold text-gray-800">{{ $produk->nama_produk }}</h5>
-                                <p class="text-green-600 font-semibold mt-1">Rp{{ number_format($produk->harga, 0, ',', '.') }}</p>
-                                <p class="text-sm text-gray-500 mt-2 line-clamp-2">{{ $produk->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
-                            </div>
+                                <div class="p-4">
+                                    <h5 class="text-lg font-bold text-gray-800">{{ $produk->nama_produk }}</h5>
+                                    <p class="text-green-600 font-semibold mt-1">Rp{{ number_format($produk->harga, 0, ',', '.') }}</p>
+                                    <p class="text-sm text-gray-500 mt-2 line-clamp-2">{{ $produk->deskripsi ?? 'Tidak ada deskripsi.' }}</p>
+                                </div>
+                            </a>
                         </div>
                     @endforeach
                 </div>

@@ -57,7 +57,7 @@
                            value="{{ old('no_telp_usaha', $usaha->no_telp_usaha) }}" required>
                 </div>
 
-                {{-- STATUS TEMPAT (Sesuai ENUM database) --}}
+                {{-- STATUS TEMPAT --}}
                 <div class="form-group">
                     <label class="block text-gray-700 font-bold mb-2">Status Tempat Usaha</label>
                     <select name="status_tempat" class="form-input w-full border rounded px-3 py-2" required>
@@ -79,7 +79,7 @@
                            value="{{ old('tenaga_kerja_p', $usaha->tenaga_kerja_p) }}">
                 </div>
 
-                {{-- LOGO (Opsional) --}}
+                {{-- LOGO --}}
                 <div class="form-group md:col-span-2">
                     <label class="block text-gray-700 font-bold mb-2">Update Logo (Opsional)</label>
                     @if($usaha->logo)
@@ -94,20 +94,18 @@
 
             </div>
 
-            {{-- === BAGIAN 2: JADWAL OPERASIONAL (TAMBAHAN BARU) === --}}
+            {{-- === BAGIAN 2: JADWAL OPERASIONAL === --}}
             <div class="mt-8 pt-6 border-t border-gray-200">
                 <h3 class="text-xl font-bold text-green-700 mb-4">Pengaturan Jadwal Operasional</h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- JAM BUKA --}}
+                    {{-- JAM BUKA & TUTUP --}}
                     <div class="form-group">
                         <label class="block text-gray-700 font-bold mb-2">Jam Buka</label>
-                        {{-- Mengambil data dari relasi jadwal jika ada --}}
                         <input type="time" name="jam_buka" class="form-input w-full border rounded px-3 py-2"
                             value="{{ old('jam_buka', $usaha->jadwal?->jam_buka) }}">
                     </div>
 
-                    {{-- JAM TUTUP --}}
                     <div class="form-group">
                         <label class="block text-gray-700 font-bold mb-2">Jam Tutup</label>
                         <input type="time" name="jam_tutup" class="form-input w-full border rounded px-3 py-2"
@@ -115,12 +113,11 @@
                     </div>
                 </div>
 
-                {{-- HARI LIBUR --}}
+                {{-- HARI LIBUR (MINGGUAN) --}}
                 <div class="form-group mt-4">
-                    <label class="block text-gray-700 font-bold mb-2">Pilih Hari Libur (Centang jika libur)</label>
+                    <label class="block text-gray-700 font-bold mb-2">Libur Rutin Mingguan</label>
                     <div class="flex flex-wrap gap-4 mt-2">
                         @php
-                            // Mengambil data hari libur dari database (string), dipecah jadi array
                             $liburSaved = explode(', ', $usaha->jadwal?->hari_libur ?? '');
                             $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
                         @endphp
@@ -134,8 +131,29 @@
                             </label>
                         @endforeach
                     </div>
-                    <p class="text-sm text-gray-500 mt-1">*Biarkan kosong jika toko buka setiap hari.</p>
+                    <p class="text-xs text-gray-500 mt-1">*Centang hari di mana toko selalu libur setiap minggunya.</p>
                 </div>
+
+                {{-- 🔥 TAMBAHAN BARU: LIBUR TANGGAL TERTENTU 🔥 --}}
+                <div class="form-group mt-6 p-4 bg-red-50 rounded border border-red-100">
+                    <label class="block text-red-700 font-bold mb-2">Libur Sementara (Opsional)</label>
+                    <p class="text-sm text-gray-600 mb-3">Gunakan ini jika toko tutup pada rentang tanggal tertentu (misal: Mudik, Renovasi).</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1 font-semibold">Dari Tanggal</label>
+                            <input type="date" name="tgl_libur_mulai" class="form-input w-full border rounded px-3 py-2 bg-white"
+                                value="{{ old('tgl_libur_mulai', $usaha->jadwal?->tgl_libur_mulai) }}">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1 font-semibold">Sampai Tanggal</label>
+                            <input type="date" name="tgl_libur_selesai" class="form-input w-full border rounded px-3 py-2 bg-white"
+                                value="{{ old('tgl_libur_selesai', $usaha->jadwal?->tgl_libur_selesai) }}">
+                        </div>
+                    </div>
+                    <p class="text-xs text-red-500 mt-2">*Kosongkan jika tidak ada rencana libur panjang.</p>
+                </div>
+
             </div>
 
             {{-- TOMBOL AKSI --}}

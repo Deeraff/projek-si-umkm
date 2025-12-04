@@ -16,9 +16,12 @@ class JadwalOperasional extends Model
         'jam_buka',
         'jam_tutup',
         'hari_libur',
+        // ✅ TAMBAHAN BARU (WAJIB ADA):
+        'tgl_libur_mulai',
+        'tgl_libur_selesai',
     ];
 
-    // Relasi balik (Opsional)
+    // Relasi balik ke DataUsaha
     public function usaha()
     {
         return $this->belongsTo(DataUsaha::class, 'data_usaha_id');
