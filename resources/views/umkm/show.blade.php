@@ -158,7 +158,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($produkAktif as $produk)
                         <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition">
-                            <a href="{{ route('produk.detail', $produk->id) }}" class="block h-full">
+                            <a href="{{ route('produk.show', $produk->id) }}" class="block h-full">
                                 @if($produk->foto_produk)
                                     <img src="{{ asset('storage/' . $produk->foto_produk) }}"
                                         alt="{{ $produk->nama_produk }}"
