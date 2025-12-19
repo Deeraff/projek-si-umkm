@@ -24,7 +24,7 @@
     <header class="bg-white shadow fixed top-0 w-full z-50">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="{{ route('landing.index') }}">
-                <img src="{{ asset('assets/logo.png') }}" alt="Logo UMKM" class="h-10 w-auto">
+                <img src="{{ asset('storage/logo.svg') }}" alt="Logo UMKM" class="h-10 w-auto">
             </a>
 
 
@@ -76,9 +76,12 @@
                             class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
 
                             {{-- Link Lihat Profile --}}
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 Lihat Profile
                             </a>
+
+
+
 
                             {{-- Form Logout --}}
                             <form method="POST" action="{{ route('logout') }}">

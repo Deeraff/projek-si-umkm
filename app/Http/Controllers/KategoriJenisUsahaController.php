@@ -13,16 +13,18 @@ class KategoriJenisUsahaController extends Controller
      */
     public function index()
     {
-        // Pengecekan Otorisasi Admin (Penting!)
+        // Pengecekan Otorisasi Admin
         if (Auth::check() && Auth::user()->role !== 'admin') {
             return redirect('/')->with('error', 'Akses Ditolak. Anda bukan admin.');
         }
-
-        // Ambil semua data kategori, diurutkan berdasarkan nama
-        $data_kategori = KategoriJenisUsaha::orderBy('nama_jenis', 'asc')->get();
-
+    
+        // Ambil data kategori + pagination
+        $data_kategori = KategoriJenisUsaha::orderBy('nama_jenis', 'asc')
+                            ->paginate(5)      // ⬅ pagination
+                            ->withQueryString(); // jika ada form pencarian nanti
+    
         return view('admin.kategori.index', compact('data_kategori'));
-    }
+    }    
 
     /**
      * Tampilkan form untuk membuat Kategori baru.

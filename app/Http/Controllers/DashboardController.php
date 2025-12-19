@@ -67,11 +67,13 @@ class DashboardController extends Controller
             $query->where('nama_usaha', 'like', '%' . $search . '%');
         }
     
-        // Urutkan dari paling baru
-        $data_umkm = $query->orderBy('created_at', 'desc')->get();
+        // Urutkan dari paling baru dan paginate
+        $data_umkm = $query->orderBy('created_at', 'desc')
+                            ->paginate(10)          // ⬅ pagination
+                            ->withQueryString();     // filter tetap terbawa
     
         return view('admin.umkm.umkm_pendaftar', compact('data_umkm'));
-    }    
+    }        
 
     /**
      * Lakukan verifikasi UMKM, mengubah status_umkm menjadi 'verified'.

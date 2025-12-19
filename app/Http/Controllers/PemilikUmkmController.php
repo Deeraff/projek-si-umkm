@@ -13,8 +13,12 @@ class PemilikUmkmController extends Controller
         if (Auth::check() && Auth::user()->role !== 'admin') {
             return redirect('/')->with('error', 'Akses ditolak.');
         }
-
-        $pemilik = PemilikUmkm::orderBy('nama_lengkap', 'asc')->get();
+    
+        // Gunakan pagination (10 data per halaman)
+        $pemilik = PemilikUmkm::orderBy('nama_lengkap', 'asc')
+                    ->paginate(5)
+                    ->withQueryString(); // agar tetap menyimpan parameter pencarian jika ditambah nanti
+    
         return view('admin.pemilik.index', compact('pemilik'));
-    }
+    }    
 }
