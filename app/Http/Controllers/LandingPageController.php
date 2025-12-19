@@ -13,57 +13,61 @@ class LandingPageController extends Controller
 {
     public function index(Request $request)
     {
+        // 1. Ambil data statis
         $announcements = Announcement::latest()->take(3)->get();
         $faqs = Faq::latest()->take(3)->get();
 
-        $filter = $request->get('filter');    // terpopuler / 24jam / khas
-        $search = $request->get('search');    // pencarian nama usaha
+        // 2. Ambil parameter dari input form
+        $filter = $request->get('filter'); // terpopuler / 24jam / khas
+        $search = $request->get('search'); // kata kunci pencarian
 
-        // ===== DEFAULT DATA UMKM (untuk guest) =====
-        $query = DataUsaha::query()->with('jenisUsaha', 'pemilik');
+        // 3. Bangun Query Utama untuk Daftar UMKM
+        // Gunakan query pendaftar yang sudah diverifikasi (opsional tapi disarankan)
+        $query = DataUsaha::query()->with(['jenisUsaha', 'pemilik']);
 
-        // =============== SEARCH ===============
+        // =============== LOGIKA PENCARIAN ===============
         if ($search) {
-            $query->where('nama_usaha', 'like', '%' . $search . '%');
+            $query->where('nama_usaha', 'like', '%' . $search . '%')
+                  ->orWhere('alamat_usaha', 'like', '%' . $search . '%');
         }
 
-        // =============== FILTER ===============
-        if ($filter == 'popular') {
-            // berdasarkan views terbanyak
+        // =============== LOGIKA FILTER ===============
+        if ($filter == 'terpopuler') {
+            // Pastikan kolom 'views' ada di tabel data_usahas
             $query->orderBy('views', 'desc');
-        }
-
-        if ($filter == '24jam') {
-            // UMKM yang buka 24 jam
+        } 
+        elseif ($filter == '24jam') {
+            // Asumsi: jam_buka & tutup 00:00 berarti 24 jam
             $query->where('jam_buka', '00:00')->where('jam_tutup', '00:00');
+        } 
+        elseif ($filter == 'khas') {
+            // Sesuaikan dengan data kategori yang Anda punya
+            $query->whereHas('jenisUsaha', function($q) {
+                $q->where('nama_jenis', 'like', '%Khas%');
+            });
         }
 
-        if ($filter == 'khas') {
-            // kategori kuliner khas sukorame
-            $query->where('kategori', 'Kuliner Khas Sukorame');
-        }
-
-        // DEFAULT: ambil 6 UMKM
+        // Ambil hasil akhir (limit 30 agar tidak terlalu berat)
         $daftarUmkm = $query->latest()->take(30)->get();
 
-        // ==== Untuk user yang login sebagai pemilik ====
+        // 4. LOGIKA PENGECEKAN KEPEMILIKAN (Untuk Tombol "LIHAT UMKM")
+        // Bagian ini tidak boleh menimpa $daftarUmkm
         $hasUmkm = false;
         $umkmId = null;
 
         if (Auth::check()) {
             $pemilik = PemilikUmkm::where('email', Auth::user()->email)->first();
-
             if ($pemilik) {
-                $daftarUmkm = DataUsaha::where('pemilik_id', $pemilik->id)
-                    ->latest()
-                    ->get();
-
-                $hasUmkm = $daftarUmkm->isNotEmpty();
-                $umkmPertama = $daftarUmkm->first();
-                $umkmId = $umkmPertama ? $umkmPertama->id : null;
+                // Cek apakah pemilik ini punya usaha
+                $usahaSaya = DataUsaha::where('pemilik_id', $pemilik->id)->first();
+                if ($usahaSaya) {
+                    $hasUmkm = true;
+                    $umkmId = $usahaSaya->id;
+                }
             }
         }
 
+        // 5. Kirim ke View
         return view('landing-page.index', compact(
             'announcements',
             'faqs',
@@ -75,7 +79,6 @@ class LandingPageController extends Controller
         ));
     }
 
-
     public function announcements()
     {
         $announcements = Announcement::latest()->paginate(10);
@@ -84,7 +87,7 @@ class LandingPageController extends Controller
 
     public function faqs()
     {
-        $faqs = Faq::paginate(10);
+        $faqs = Faq::latest()->paginate(10);
         return view('landing-page.faqs', compact('faqs'));
     }
 }

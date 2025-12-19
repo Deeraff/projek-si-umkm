@@ -342,7 +342,7 @@ class UmkmController extends Controller
     }
 
     /**
-     * Memproses Update Data UMKM (Termasuk Jadwal Operasional)
+     * Memproses Update Data UMKM (Termasuk Jadwal Operasional & Link Marketplace)
      */
     public function update(Request $request)
     {
@@ -360,16 +360,19 @@ class UmkmController extends Controller
             'status_tempat' => 'required|in:milik sendiri,sewa,pinjam',
             'tenaga_kerja_l' => 'nullable|integer|min:0',
             'tenaga_kerja_p' => 'nullable|integer|min:0',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Opsional
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', 
             
-            // ✅ TAMBAHAN BARU: Validasi untuk jadwal
+            // Validasi Jadwal
             'jam_buka'       => 'nullable',
             'jam_tutup'      => 'nullable',
-            'hari_libur'     => 'nullable|array', // Harus array karena dari checkbox
-            
-            // ✅ TAMBAHAN: Validasi Tanggal Libur
+            'hari_libur'     => 'nullable|array',
             'tgl_libur_mulai'   => 'nullable|date',
             'tgl_libur_selesai' => 'nullable|date|after_or_equal:tgl_libur_mulai',
+
+            // ✅ TAMBAHAN BARU: Validasi Link Marketplace
+            // 'nullable|url' memastikan kalau diisi harus format http/https
+            'link_shopee' => 'nullable|url',
+            'link_grab'   => 'nullable|url',
         ]);
 
         // 2. Proses Logo (Jika ada upload baru)
@@ -393,23 +396,22 @@ class UmkmController extends Controller
             'status_tempat' => $validated['status_tempat'],
             'tenaga_kerja_l' => $validated['tenaga_kerja_l'] ?? 0,
             'tenaga_kerja_p' => $validated['tenaga_kerja_p'] ?? 0,
+
+            // 🔥 BAGIAN INI YANG KEMARIN HILANG/KURANG 🔥
+            // Kita ambil langsung dari request
+            'link_shopee' => $request->link_shopee,
+            'link_grab'   => $request->link_grab,
         ]);
 
-        // ✅ TAMBAHAN BARU: SIMPAN JADWAL OPERASIONAL
-        
-        // Ubah array checkbox ['Senin', 'Minggu'] jadi string "Senin, Minggu"
-        // Jika tidak ada yang dicentang, maka null
+        // 4. SIMPAN JADWAL OPERASIONAL
         $strHariLibur = $request->hari_libur ? implode(', ', $request->hari_libur) : null;
 
-        // Cek apakah sudah punya jadwal atau belum
-        // Gunakan updateOrCreate untuk otomatis update jika ada, create jika belum
         JadwalOperasional::updateOrCreate(
-            ['data_usaha_id' => $usaha->id], // Kondisi pencarian (WHERE)
+            ['data_usaha_id' => $usaha->id], 
             [
                 'jam_buka'   => $request->jam_buka,
                 'jam_tutup'  => $request->jam_tutup,
                 'hari_libur' => $strHariLibur,
-                // Simpan tanggal libur
                 'tgl_libur_mulai'   => $request->tgl_libur_mulai,
                 'tgl_libur_selesai' => $request->tgl_libur_selesai,
             ]

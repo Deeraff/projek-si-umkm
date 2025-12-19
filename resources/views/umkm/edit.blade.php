@@ -92,6 +92,34 @@
                     <p class="text-xs text-gray-500 mt-1">Biarkan kosong jika tidak ingin mengganti logo.</p>
                 </div>
 
+                {{-- ======================================================== --}}
+                {{-- 🔥 TAMBAHAN BARU: LINK MARKETPLACE (Shopee & Grab) 🔥 --}}
+                {{-- ======================================================== --}}
+                <div class="form-group md:col-span-2 mt-4 pt-4 border-t border-gray-100">
+                    <h3 class="font-bold text-gray-700 mb-4">Link Marketplace / Penjualan Online</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Link Shopee --}}
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Link Shopee</label>
+                            <input type="url" name="link_shopee" class="form-input w-full border rounded px-3 py-2" 
+                                   placeholder="Contoh: https://shopee.co.id/toko-saya"
+                                   value="{{ old('link_shopee', $usaha->link_shopee ?? '') }}">
+                        </div>
+
+                        {{-- Link Grab --}}
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">Link Grab</label>
+                            <input type="url" name="link_grab" class="form-input w-full border rounded px-3 py-2" 
+                                   placeholder="Contoh: https://food.grab.com/..."
+                                   value="{{ old('link_grab', $usaha->link_grab ?? '') }}">
+                        </div>
+                    </div>
+                </div>
+                {{-- ======================================================== --}}
+                {{-- 🔥 AKHIR TAMBAHAN 🔥 --}}
+                {{-- ======================================================== --}}
+
             </div>
 
             {{-- === BAGIAN 2: JADWAL OPERASIONAL === --}}
@@ -134,7 +162,7 @@
                     <p class="text-xs text-gray-500 mt-1">*Centang hari di mana toko selalu libur setiap minggunya.</p>
                 </div>
 
-                {{-- 🔥 TAMBAHAN BARU: LIBUR TANGGAL TERTENTU 🔥 --}}
+                {{-- LIBUR TANGGAL TERTENTU --}}
                 <div class="form-group mt-6 p-4 bg-red-50 rounded border border-red-100">
                     <label class="block text-red-700 font-bold mb-2">Libur Sementara (Opsional)</label>
                     <p class="text-sm text-gray-600 mb-3">Gunakan ini jika toko tutup pada rentang tanggal tertentu (misal: Mudik, Renovasi).</p>

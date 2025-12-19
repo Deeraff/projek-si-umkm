@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-// ✅ TAMBAHAN BARU 1: Import Model Jadwal
 use App\Models\JadwalOperasional;
 
 class DataUsaha extends Model
@@ -13,7 +12,6 @@ class DataUsaha extends Model
 
     protected $table = 'data_usaha';
 
-    // Bagian ini TIDAK DIUBAH (tetap sama seperti punya Anda)
     protected $fillable = [
         'pemilik_id',
         'nama_usaha',
@@ -29,9 +27,13 @@ class DataUsaha extends Model
         'tenaga_kerja_p',
         'status_umkm',
         'alasan_tolak',
+        
+        // 🔥 TAMBAHKAN INI AGAR BISA DISIMPAN 🔥
+        'link_shopee',
+        'link_grab',
     ];
 
-    // Fungsi-fungsi lama ini TIDAK DIUBAH
+    // ... (Fungsi-fungsi di bawahnya biarkan saja, tidak perlu diubah)
     public function pemilik()
     {
         return $this->belongsTo(PemilikUmkm::class, 'pemilik_id');
@@ -52,13 +54,8 @@ class DataUsaha extends Model
         return $this->hasMany(DataProduk::class, 'usaha_id');
     }
 
-    /**
-     * ✅ TAMBAHAN BARU 2: FUNGSI JADWAL
-     * Hanya fungsi ini yang saya tambahkan agar bisa memanggil jadwal operasional.
-     */
     public function jadwal()
     {
         return $this->hasOne(JadwalOperasional::class, 'data_usaha_id');
     }
-
 }

@@ -23,20 +23,24 @@ class Umkm extends Model
 
         // Data Usaha
         'nama_usaha',
-        'logo_usaha',
-        'jenis_usaha',
+        'logo_usaha',     // ⚠️ Pastikan di database namanya 'logo_usaha', bukan 'logo'
+        'jenis_usaha',    // ⚠️ Pastikan di database namanya 'jenis_usaha', bukan 'jenis_usaha_id'
         'bentuk_usaha',
         'alamat_usaha',
         'no_telp_usaha',
         'lokasi_usaha',
         'status_tempat',
-        'tenaga_kerja_laki',
-        'tenaga_kerja_perempuan',
+        'tenaga_kerja_laki',      // ⚠️ Cek kesesuaian dengan input name="tenaga_kerja_l"
+        'tenaga_kerja_perempuan', // ⚠️ Cek kesesuaian dengan input name="tenaga_kerja_p"
 
         // Legalitas
         'nib',
         'iumk',
         'sertifikat_halal',
         'sertifikat_merek',
+
+        // 🔥 TAMBAHAN BARU (WAJIB ADA) 🔥
+        'link_shopee',
+        'link_grab',
     ];
 }

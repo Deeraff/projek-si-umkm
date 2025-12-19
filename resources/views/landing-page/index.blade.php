@@ -123,7 +123,8 @@
 
                 {{-- 2. DROPDOWN FILTER --}}
                 <div class="search-filter-box">
-                    <select name="filter" class="form-select custom-select-style">
+                    {{-- GANTI TAG SELECT LAMA DENGAN INI --}}
+                    <select name="filter" class="form-select custom-select-style" onchange="this.form.submit()">
                         <option value="">Semua Kategori</option>
                         <option value="terpopuler" {{ request('filter') == 'terpopuler' ? 'selected' : '' }}>Terpopuler</option>
                         <option value="24jam" {{ request('filter') == '24jam' ? 'selected' : '' }}>Kuliner 24 Jam</option>

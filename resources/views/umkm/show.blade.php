@@ -143,6 +143,34 @@
                         </span>
                     </div>
                 </div>
+
+                {{-- 🔥 [TAMBAHAN BARU] LINK MARKETPLACE 🔥 --}}
+                @if(!empty($usaha->link_shopee) || !empty($usaha->link_grab))
+                    <div class="mt-6 pt-4 border-t border-gray-100">
+                        <h4 class="text-md font-bold text-gray-700 mb-3">Pesan Online</h4>
+                        <div class="flex flex-wrap gap-3">
+                            
+                            {{-- Tombol Shopee --}}
+                            @if(!empty($usaha->link_shopee))
+                                <a href="{{ $usaha->link_shopee }}" target="_blank"
+                                   class="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition shadow-sm font-medium">
+                                    <i class="bi bi-bag-fill"></i> Shopee Food
+                                </a>
+                            @endif
+
+                            {{-- Tombol Grab --}}
+                            @if(!empty($usaha->link_grab))
+                                <a href="{{ $usaha->link_grab }}" target="_blank"
+                                   class="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition shadow-sm font-medium">
+                                    <i class="bi bi-bicycle"></i> Grab Food
+                                </a>
+                            @endif
+
+                        </div>
+                    </div>
+                @endif
+                {{-- 🔥 [AKHIR TAMBAHAN] 🔥 --}}
+
             </div>
         </div>
 
@@ -158,6 +186,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($produkAktif as $produk)
                         <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition">
+                            {{-- Ganti ke route 'produk.detail' sesuai kesepakatan web.php --}}
                             <a href="{{ route('produk.detail', $produk->id) }}" class="block h-full">
                                 @if($produk->foto_produk)
                                     <img src="{{ asset('storage/' . $produk->foto_produk) }}"

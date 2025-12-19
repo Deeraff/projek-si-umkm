@@ -84,7 +84,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/umkm/produk/tambah', [ProdukController::class, 'create'])->name('produk.create');
     Route::post('/umkm/produk/store', [ProdukController::class, 'store'])->name('produk.store');
     Route::get('/list', [ProdukController::class, 'list'])->name('produk.list');
-    Route::get('/umkm/produk/{id}', [ProdukController::class, 'show'])->name('produk.show');
+    Route::get('/umkm/produk/{id}', [ProdukController::class, 'show'])->name('produk.detail');
     Route::get('/produk/{id}/edit', [ProdukController::class, 'edit'])->name('produk.edit');
     Route::put('/produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
     Route::delete('/produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');

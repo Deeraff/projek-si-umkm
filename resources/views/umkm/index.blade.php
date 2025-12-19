@@ -77,6 +77,30 @@
                 <span>L: {{ $usaha->tenaga_kerja_l ?? 0 }}, P: {{ $usaha->tenaga_kerja_p ?? 0 }}</span>
             </div>
 
+            {{-- 🔥 TAMBAHAN BARU: MARKETPLACE LINKS 🔥 --}}
+            <div class="umkm-info-item">
+                <strong>Penjualan Online</strong>
+                <div class="flex flex-wrap gap-2 mt-1">
+                    @if(!empty($usaha->link_shopee))
+                        <a href="{{ $usaha->link_shopee }}" target="_blank" 
+                           class="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm hover:bg-orange-200 transition border border-orange-200">
+                           🛍️ Shopee
+                        </a>
+                    @endif
+
+                    @if(!empty($usaha->link_grab))
+                        <a href="{{ $usaha->link_grab }}" target="_blank" 
+                           class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200 transition border border-green-200">
+                           🛵 Grab
+                        </a>
+                    @endif
+
+                    @if(empty($usaha->link_shopee) && empty($usaha->link_grab))
+                        <span class="text-gray-400 italic">- Belum ada link -</span>
+                    @endif
+                </div>
+            </div>
+
             {{-- 🔥 JADWAL OPERASIONAL (UPDATED) 🔥 --}}
             
             <div class="umkm-info-item" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
